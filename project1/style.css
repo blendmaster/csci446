@@ -85,8 +85,7 @@ section {
 		display: block;
 		margin-bottom: 1em; }
 
-small {
+footer {
 	padding: .5em;
 	text-align: center;
-	display: block;
 	background: #f0f0f0; }
