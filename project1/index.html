@@ -25,12 +25,12 @@
 	<h1>Lorem Ipsum Dolor Sit Amet.</h1>
 	<form id='feel'>
 		<div>
-			<label>How do you feel today?</label>
-			<input type="text" name='current-feel' required data-error-message="Surely you feel something!">
+			<label for='current-feel'>How do you feel today?</label>
+			<input id='current-feel' type="text" name='current-feel' required data-error-message="Surely you feel something!">
 		</div>
 		<div>
-			<label>How would you like to feel?<br>(Choose all that apply)</label>
-			<select name='wanted-feel' multiple>
+			<label for='wanted-feel'>How would you like to feel?<br>(Choose all that apply)</label>
+			<select id='wanted-feel' name='wanted-feel' multiple>
 				<option value="numb">Comfortably numb</option>
 				<option value="poopy">Grumpy as poop, you jerk</option>
 				<option value="substances">Happy like I'm on controlled substances</option>
@@ -42,8 +42,8 @@
 		</div>
 	</form>
 	<div id='progress'>
-		<label>Current Progress in Life</label>
-		<output>Mediocre. You really should enjoy life more.</output>
+		<label for='prognosis'>Current Progress in Life</label>
+		<output id='prognosis'>Mediocre. You really should enjoy life more.</output>
 	</div>
 </section>
 <footer>
