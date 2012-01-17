@@ -1,4 +1,4 @@
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
 //html5 validity api all up ins
 var validate = function () { 
 	this.setCustomValidity((this.validity.valueMissing) ? this.dataset.errorMessage : "");
@@ -9,4 +9,4 @@ feel.addEventListener('invalid', validate);
 
 //prevent form submission (page reload)
 document.getElementById('feel').addEventListener('submit', function(e) { e.preventDefault(); });
-})();
+});
