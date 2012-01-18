@@ -8,6 +8,9 @@ class Player
 	  if immediate_captive
 		  return warrior.rescue! direction_of immediate_captive
 	  end
+	  if ticking_captive
+		  return rescue_ticking!
+	  end
 	  if immediate_danger
 		  return warrior.attack! direction_of immediate_danger
 	  end
@@ -19,12 +22,34 @@ class Player
 	  end
 	  warrior.walk! warrior.direction_of_stairs
   end
+  def ticking_captive
+	  @warrior.listen.each do |space|
+		  return space if space.captive? and space.ticking?
+	  end
+	  return false
+  end
+	  
+  def rescue_ticking!
+	  if surroundings.include? ticking_captive
+		  return @warrior.rescue! direction_of ticking_captive
+	  end
+	  if adventurable?(@warrior.feel direction_of ticking_captive)
+		  return @warrior.walk! direction_of ticking_captive
+	  end
+	  ([:forward,:left,:right].shuffle).concat([:backward]).each do |direction|
+		  if adventurable?(@warrior.feel(direction))
+			  return @warrior.walk! direction
+		  end
+	  end
+  end
+  def adventurable?(space)
+	  return (!space.stairs? and space.empty?)
+  end
   def adventure!(direction)
 	  if @warrior.feel(direction).stairs?
 		  surroundings.shuffle.each do |space|
-			  if !space.stairs?
-				  @warrior.walk! direction_of space
-				  return
+			  if adventurable? space
+				  return @warrior.walk! direction_of space
 			  end
 		  end
 	  end
