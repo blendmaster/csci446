@@ -1,5 +1,5 @@
 - title "Store Catalog"
-%section#catalog
-  %h1 Store Catalog
-  #products
-    = render Product.all
+%h1= yield :title
+%section#products
+  %h1 Products
+  = render Product.all

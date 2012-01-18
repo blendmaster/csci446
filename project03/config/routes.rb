@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 Project03::Application.routes.draw do
   get "store/index"
 
