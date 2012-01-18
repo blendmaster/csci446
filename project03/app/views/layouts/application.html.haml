@@ -1,10 +1,15 @@
 !!! 5
 %html
   %head
-    %title= yield :title
+    %title
+      Depot — 
+      = yield :title
     = stylesheet_link_tag "application", media: "all"
     = javascript_include_tag "application"
     = csrf_meta_tags
   %body
-    %h1= yield :title
+    %h1
+      = link_to "Depot", "/"
+      —
+      = yield :title
     = yield
