@@ -70,20 +70,16 @@ section {
 	background: #f0f0ff;
 	display: block;
 	position: absolute;
+	margin: 0;
 	top: 0;
 	right: 0;
 	padding: 5px;
 	width: 30%; }
 
-	#progress label {
-		display: block;
+	#progress h1 {
 		font: bold 120% sans-serif;
 		margin-bottom: .5em;
 		width: 100%; }
-
-	#progress output {
-		display: block;
-		margin-bottom: 1em; }
 
 footer {
 	padding: .5em;
