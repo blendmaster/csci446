@@ -4,22 +4,12 @@ class Player
   end
   def play_turn(warrior)
 	  @warrior = warrior
+	  return rescue_ticking! if ticking_captive
 	  return if healup
-	  if immediate_captive
-		  return warrior.rescue! direction_of immediate_captive
-	  end
-	  if ticking_captive
-		  return rescue_ticking!
-	  end
-	  if immediate_danger
-		  return warrior.attack! direction_of immediate_danger
-	  end
-	  if captives
-		  return adventure! direction_of captives
-	  end
-	  if danger
-		  return adventure! direction_of danger
-	  end
+	  return warrior.rescue! direction_of immediate_captive if immediate_captive
+	  return warrior.attack! direction_of immediate_danger if immediate_danger
+	  return adventure! direction_of captives if captives
+	  return adventure! direction_of danger if danger
 	  warrior.walk! warrior.direction_of_stairs
   end
   def ticking_captive
@@ -30,17 +20,21 @@ class Player
   end
 	  
   def rescue_ticking!
-	  if surroundings.include? ticking_captive
-		  return @warrior.rescue! direction_of ticking_captive
+	  surroundings.each do |space|
+		  return @warrior.rescue! direction_of space if space.captive? and space.ticking?
 	  end
-	  if adventurable?(@warrior.feel direction_of ticking_captive)
-		  return @warrior.walk! direction_of ticking_captive
+	  [:left, :right].each do |direction|
+		  return @warrior.bind! direction if @warrior.feel(direction).enemy?
 	  end
-	  ([:forward,:left,:right].shuffle).concat([:backward]).each do |direction|
-		  if adventurable?(@warrior.feel(direction))
-			  return @warrior.walk! direction
+	  forward = @warrior.feel direction_of ticking_captive
+	  if forward.enemy?
+		  return @warrior.attack! direction_of forward
+	  elsif forward.stairs? or !forward.empty?
+		  [:left, :right, :backward].each do |direction|
+			  return @warrior.walk! direction if adventurable?(@warrior.feel direction)
 		  end
 	  end
+	  @warrior.walk! direction_of forward
   end
   def adventurable?(space)
 	  return (!space.stairs? and space.empty?)
