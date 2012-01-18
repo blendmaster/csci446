@@ -7,4 +7,16 @@ class Product < ActiveRecord::Base
 		message: 'must be a gif, jpg, or png image.'
 	}
 	default_scope order: 'title'
+
+	has_many :line_items
+	before_destroy :ensure_not_in_line_items
+		   
+	private
+			 
+	def ensure_not_in_line_items
+		return true if line_items.empty?
+		errors.add :base, 'This product is present in existing Carts!'
+		return false
+	end
+
 end
