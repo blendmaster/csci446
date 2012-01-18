@@ -33,6 +33,10 @@ gem "haml"
 # Use unicorn as the web server
 # gem 'unicorn'
 
+# http://stackoverflow.com/questions/7082364/what-does-warn-could-not-determine-content-length-of-response-body-mean-and-h
+# says that I should use thin as a webserver
+gem "thin"
+
 # Deploy with Capistrano
 # gem 'capistrano'
 
