@@ -14,9 +14,7 @@ class Product < ActiveRecord::Base
 	private
 			 
 	def ensure_not_in_line_items
-		return true if line_items.empty?
-		errors.add :base, 'This product is present in existing Carts!'
-		return false
+		errors.add( :base, 'This product is present in existing Carts!') and return false unless line_items.empty?
 	end
 
 end
