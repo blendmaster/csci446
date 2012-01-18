@@ -6,23 +6,31 @@ class Player
 	  @warrior = warrior
 	  return if healup
 	  if immediate_captive
-		  warrior.rescue! direction_of immediate_captive
-		  return
+		  return warrior.rescue! direction_of immediate_captive
 	  end
 	  if immediate_danger
-		  warrior.attack! direction_of immediate_danger
-		  return
+		  return warrior.attack! direction_of immediate_danger
 	  end
 	  if captives
-		  warrior.walk! direction_of captives
-		  return
+		  return adventure! direction_of captives
 	  end
 	  if danger
-		  warrior.walk! direction_of danger
-		  return
+		  return adventure! direction_of danger
 	  end
 	  warrior.walk! warrior.direction_of_stairs
   end
+  def adventure!(direction)
+	  if @warrior.feel(direction).stairs?
+		  surroundings.shuffle.each do |space|
+			  if !space.stairs?
+				  @warrior.walk! direction_of space
+				  return
+			  end
+		  end
+	  end
+	  @warrior.walk! direction
+  end
+
   def direction_of(space)
 	  @warrior.direction_of(space)
   end
