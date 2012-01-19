@@ -1,5 +1,5 @@
 = content_tag_for :article, product do
-  %h1= product.title
+  %h1= link_to product.title, product_path( product )
   = image_tag product.image_url
   .description!= product.description
   .price= number_to_currency product.price

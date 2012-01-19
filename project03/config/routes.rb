@@ -8,5 +8,7 @@ Project03::Application.routes.draw do
 	  post 'add/:product_id', action: :add, as: :add_to
 	  post 'empty'
   end
-  resources :products
+  resources :products do
+  	get :who_bought, on: :member
+  end
 end

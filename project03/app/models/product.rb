@@ -9,12 +9,16 @@ class Product < ActiveRecord::Base
 	default_scope order: 'title'
 
 	has_many :line_items
+	has_many :orders, through: :line_items
 	before_destroy :ensure_not_in_line_items
 		   
 	private
 			 
 	def ensure_not_in_line_items
-		errors.add( :base, 'This product is present in existing Carts!') and return false unless line_items.empty?
+		unless line_items.empty?
+			errors.add :base, 'This product is present in existing Carts!'
+			return false
+		end
 	end
 
 end
