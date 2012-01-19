@@ -6,4 +6,8 @@ class Cart < ActiveRecord::Base
 		item.quantity += 1
 		return item
 	end
+
+	def total_price
+		line_items.sum &:total_price
+	end
 end

@@ -1,5 +1,21 @@
 %section#cart
   %h1 Your Cart
-  %ul#line_items= render cart.line_items
+  %table#line_items
+    %colgroup
+      %col
+      %col
+      %col
+      %col
+    %thead
+      %tr
+        %th Item
+        %th Price
+        %th Quantity
+        %th Subtotal
+    %tbody= render cart.line_items
+    %tfoot
+      %tr
+        %td.total_line{colspan: 3} Total
+        %td.currency.total= number_to_currency cart.total_price
   = button_to 'Empty Cart', action: :empty, confirm: "Are you sure?"
   
