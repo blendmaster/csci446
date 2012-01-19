@@ -16,5 +16,5 @@
     %tr
       %td.total_line{colspan: 3} Total
       %td.currency.total= number_to_currency cart.total_price
-= button_to 'Empty Cart', action: :empty, confirm: "Are you sure?"
+= button_to 'Empty Cart', empty_cart_path, method: :post, confirm: "Are you sure?"
 

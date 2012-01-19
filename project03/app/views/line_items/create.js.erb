@@ -1,0 +1,3 @@
+$('#mini_cart')
+	.html('<%= escape_javascript render(partial: "store/cart", object: @line_item.cart) %>')
+	.effect("highlight",{}, 3000);

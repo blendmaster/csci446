@@ -1,13 +1,14 @@
 class LineItemsController < ApplicationController
-  respond_to :html, :json
+  respond_to :html, :json, :js
 
   def create
     @line_item = current_cart.add_product params[:product_id]
 	
-    respond_to do |format|
+    respond_with @line_item do |format|
       if @line_item.save
         format.html { redirect_to cart_url, notice: "#{@line_item} successfully added to cart." }
         format.json { render json: @line_item, status: :created, location: @line_item }
+		format.js
       else
         format.html { render action: "new" }
         format.json { render json: @line_item.errors, status: :unprocessable_entity }
