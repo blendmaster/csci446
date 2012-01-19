@@ -2,3 +2,6 @@
 %section#products
   %h1 Products
   = render Product.all
+%aside#mini_cart
+  %h1= link_to "Your Cart", cart_path
+  = render partial: "cart", object: @cart

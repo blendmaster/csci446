@@ -2,8 +2,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
-  private
-
   def current_cart
 	if session[:cart_id]
     	return Cart.find session[:cart_id]

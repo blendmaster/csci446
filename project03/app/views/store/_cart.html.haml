@@ -1,0 +1,8 @@
+%ul#line_items 
+  - cart.line_items.each do |item|
+    = content_tag_for :li, item do
+      = item.quantity
+      ×
+      = item.product.title
+      —
+      = number_to_currency item.total_price
