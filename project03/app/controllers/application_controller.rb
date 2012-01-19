@@ -3,12 +3,8 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   def current_cart
-	if session[:cart_id]
-    	return Cart.find session[:cart_id]
-	else
-		cart = Cart.create
-		session[:cart_id] = cart.id
-		return cart
+	Cart.find_or_create_by_id(session[:cart_id]).tap do |cart|
+		session[:cart_id] = cart.id unless session[:cart_id]
 	end
   end
 end
