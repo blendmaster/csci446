@@ -5,14 +5,6 @@ class LineItemsControllerTest < ActionController::TestCase
     @line_item = line_items(:one)
   end
 
-  test "should create line_item" do
-    assert_difference('LineItem.count') do
-      post :create, product_id: products(:one).id
-    end
-
-    assert_redirected_to cart_path
-  end
-
   test "should update line_item" do
     put :update, id: @line_item, line_item: @line_item.attributes
     assert_redirected_to cart_path
