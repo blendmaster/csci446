@@ -1,3 +1,5 @@
 %section#cart
   %h1 Your Cart
-  %ul= render cart.line_items
+  %ul#line_items= render cart.line_items
+  = button_to 'Empty Cart', action: :empty, confirm: "Are you sure?"
+  
