@@ -1,0 +1,11 @@
+-title "Orders"
+%table#orders
+  %thead
+    %tr
+      %th Name
+      %th Address
+      %th Email
+      %th Pay type
+      %th Actions
+  %tbody= render @orders
+%nav= will_paginate @orders

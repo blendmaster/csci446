@@ -1,7 +1,7 @@
 class OrdersController < ApplicationController
 	respond_to :html
 	def index
-		@orders = Order.all
+		@orders = Order.page params[:page]
 	end
 
 	def show

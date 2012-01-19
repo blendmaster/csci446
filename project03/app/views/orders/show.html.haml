@@ -1,0 +1,11 @@
+- title "Order"
+%dl#order
+  %dt Name
+  %dd= @order.name
+  %dt Address
+  %dd= @order.address
+  %dt Email
+  %dd= @order.email
+  %dt Pay Type
+  %dd= @order.pay_type
+= link_to "All Orders", orders_path

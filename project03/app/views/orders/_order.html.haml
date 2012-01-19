@@ -1,0 +1,9 @@
+= content_tag_for :tr, order do
+  %td= order.name
+  %td= order.address
+  %td= order.email
+  %td= order.pay_type
+  %td
+    =link_to "Show", order
+    =link_to "Edit", order, action: :edit
+    =link_to "Destory" , order, action: :destroy, confirm: "Are you sure?"
