@@ -7,5 +7,4 @@ class StoreControllerTest < ActionController::TestCase
     assert_response :success
 	assert_select '.price', /\$[,\d]+\.\d\d/
   end
-
 end
