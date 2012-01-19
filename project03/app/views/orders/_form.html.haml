@@ -1,0 +1,7 @@
+= semantic_form_for @order do |f|
+  = f.inputs name: "Please Enter Your Details" do
+    = f.input :name
+    = f.input :address
+    = f.input :email
+    = f.input :pay_type, as: :select, collection: Order::PAYMENT_TYPES, prompt: "Choose Payment Type" 
+  = f.buttons

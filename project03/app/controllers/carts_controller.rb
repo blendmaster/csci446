@@ -6,7 +6,7 @@ class CartsController < ApplicationController
   end
 
   def empty
-	  if current_cart.line_items.delete_all
+	  if current_cart.empty!
 		  redirect_to cart_url, notice: "Cart emptied."
 	  else
 		  redirect_to cart_url, notice: "Cart could not be emptied!"

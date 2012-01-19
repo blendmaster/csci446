@@ -18,5 +18,6 @@
           %li= link_to "Home", "/"
           %li= link_to "Cart", cart_path
     - if notice
-      %p#notice= notice
+      %div
+        %strong#notice= notice
     = yield

@@ -10,4 +10,12 @@ class Cart < ActiveRecord::Base
 	def total_price
 		line_items.sum &:total_price
 	end
+
+	def empty?
+		line_items.empty?
+	end
+
+	def empty!
+		line_items.destroy_all
+	end
 end

@@ -1,5 +1,7 @@
 # -*- encoding : utf-8 -*-
 Project03::Application.routes.draw do
+  resources :orders
+
   root to: 'store#index', as: 'store'
   resource :cart, only: :show do
 	  resources :line_items, only: [:update, :destroy]
