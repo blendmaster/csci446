@@ -1,5 +1,6 @@
 # -*- encoding : utf-8 -*-
 class ProductsController < ApplicationController
+	skip_before_filter :authorize, only: [:index, :show]
 	respond_to :html
 
 	def index

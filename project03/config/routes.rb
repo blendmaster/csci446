@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 Project03::Application.routes.draw do
-	root to: 'store#index', as: 'store'
-
+	root to: 'store#index', as: "store"
+	get "admin" => "admin#index"
 	controller :users do
 		get 'register' => :new
 		post 'register' => :create
@@ -9,6 +9,7 @@ Project03::Application.routes.draw do
 	controller :sessions do
 		get 'login' => :new
 		post 'login' => :create
+		get 'logout' => :destroy
 	end
 	resources :orders
 	resource :cart, only: :show do

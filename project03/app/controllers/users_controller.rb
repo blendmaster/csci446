@@ -6,7 +6,7 @@ class UsersController < ApplicationController
 	def create
 		@user = User.new params[:user]
 		if @user.save
-			redirect_to store_url, notice: "user #{@user.name} has been created"
+			redirect_to login_url, notice: "user #{@user.name} has been created"
 		else
 			render "new"
 		end

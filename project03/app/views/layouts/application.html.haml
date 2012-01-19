@@ -17,9 +17,17 @@
         %ul
           %li= link_to "Home", "/"
           %li= link_to "Cart", cart_path
-          %li= link_to "Login", login_path
-          %li= link_to "Register", register_path
+          - if logged_in?
+            %li= link_to "Logout", logout_path
+          - else
+            %li= link_to "Login", login_path
+            %li= link_to "Register", register_path
     - if notice
       %div
         %strong#notice= notice
     = yield
+    %footer
+      -if logged_in?
+        Logged in as
+        = current_user.name
+        = link_to "Logout", logout_path
