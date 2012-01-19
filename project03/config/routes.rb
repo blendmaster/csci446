@@ -1,6 +1,7 @@
 # -*- encoding : utf-8 -*-
 Project03::Application.routes.draw do
-	root to: 'store#index', as: "store"
+	root to: 'store#index'
+	get "store" => "store#index"
 	get "admin" => "admin#index"
 	controller :users do
 		get 'register' => :new
