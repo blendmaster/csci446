@@ -1,5 +1,8 @@
 = content_tag_for :article, product do
-  %h1= link_to product.title, product_path( product )
+  %h1
+    = link_to product.title, product_path( product )
+    = link_to "[Edit]", edit_product_path(product) if logged_in?
+    = link_to "[Destroy]", product_path(product), method: :delete if logged_in?
   = image_tag product.image_url
   .description!= product.description
   .price= number_to_currency product.price

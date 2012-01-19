@@ -3,10 +3,9 @@ Project03::Application.routes.draw do
 	root to: 'store#index'
 	get "store" => "store#index"
 	get "admin" => "admin#index"
-	controller :users do
-		get 'register' => :new
-		post 'register' => :create
-	end
+
+	resources :users
+
 	controller :sessions do
 		get 'login' => :new
 		post 'login' => :create

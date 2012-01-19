@@ -1,5 +1,4 @@
-- title "Sign Up"
-= semantic_form_for @user do |f|
+= semantic_form_for @user, url: register_path do |f|
   = f.inputs do
     = f.input :name
     = f.input :password
