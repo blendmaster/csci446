@@ -1,0 +1,7 @@
+- title "All Articles"
+- subtitle "...with a name .com hipsters love!"
+%section
+  %h1 All the World's Articles
+  = link_to "Create an Article", new_article_path
+  %footer
+    = "#{pluralize Article.count, "article"}."
