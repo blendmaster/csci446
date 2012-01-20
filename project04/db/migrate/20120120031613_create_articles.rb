@@ -1,10 +1,10 @@
 class CreateArticles < ActiveRecord::Migration
   def change
     create_table :articles do |t|
-      t.text :title
-      t.text :author
+      t.string :title
+      t.string :author
       t.text :body
-      t.integer :edits
+      t.integer :edits, null: false, default: 0
 
       t.timestamps
     end

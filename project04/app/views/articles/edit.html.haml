@@ -1,0 +1,8 @@
+- title "Editing \"#{@article.title}\""
+- subtitle "... my cousin works for Bit.ly"
+
+=link_to "Back", @previous_page, title: "Return to the page from where you came"
+%section
+  %h1= "Editing \"#{@article.title}\""
+  = render "form"
+

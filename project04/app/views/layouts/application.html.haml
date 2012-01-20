@@ -10,5 +10,10 @@
     %hgroup 
       %h1 Articl.es
       %h2= yield :subtitle
+
+    -if notice
+      %p#notice
+        %strong= notice
+
     =yield
 

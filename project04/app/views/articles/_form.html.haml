@@ -1,0 +1,5 @@
+=semantic_form_for @article do |f|
+  = hidden_field_tag 'previous_page', @previous_page
+  = f.inputs :title, :author, :body
+  = f.buttons do
+    = f.submit "Save Changes"
