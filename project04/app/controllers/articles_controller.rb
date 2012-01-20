@@ -37,4 +37,9 @@ class ArticlesController < ApplicationController
 			render :edit
 		end
 	end
+
+	def destroy
+		@article.destroy
+		redirect_to articles_url, notice: "Article \"#{@article.title}\" successfully purged!" 
+	end
 end
