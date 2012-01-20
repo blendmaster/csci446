@@ -6,7 +6,7 @@ class Article < ActiveRecord::Base
 	before_update {|article| article.edits += 1}
 
 	def body_html
-		"<p> #{body.gsub /\n\n/, "</p><p>"} </p>"
+		"<p> #{body.gsub /\r?\n\r?\n/, "</p><p>"} </p>"
 	end
 
 end
