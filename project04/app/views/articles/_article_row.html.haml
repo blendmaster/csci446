@@ -1,5 +1,5 @@
 %tr
-  %td= truncate article_row.title, length: 20
+  %td= link_to truncate(article_row.title, length: 20), article_row
   %td= truncate article_row.author, length: 20
   %td= truncate article_row.body, length: 20
   %td= article_row.created_at.strftime "%A, %B %e %Y"
