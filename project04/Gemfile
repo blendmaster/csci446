@@ -27,6 +27,11 @@ gem "haml"
 gem "formtastic"
 
 gem "will_paginate"
+
+group :development do
+	gem "wordy"
+end
+
 # To use ActiveModel has_secure_password
 gem 'bcrypt-ruby', '~> 3.0.0'
 
