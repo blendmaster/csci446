@@ -1,7 +1,11 @@
 class ArticlesController < ApplicationController
 	respond_to :html
-	before_filter except: :index do
+	before_filter except: [:index, :create] do
 		@article = Article.find_or_initialize_by_id params[:id]
+	end
+
+	before_filter only: [:create, :update] do # redefine previous_page
+		@previous_page = params[:previous_page]
 	end
 
 	def index
@@ -10,15 +14,26 @@ class ArticlesController < ApplicationController
 	def show
 	end
 
+	def new
+		@previous_page = articles_url
+	end
+
+	def create
+		if (@article = Article.new(params[:article])).save
+			redirect_to @article, notice: "Article \"#{@article.title}\" successfully created!"
+		else
+			render :edit
+		end
+	end
+
 	def edit
 		@previous_page = request.referer or article_url(@article)
 	end
 
 	def update
 		if @article.update_attributes(params[:article])
-			redirect_to params[:previous_page], notice: "Article \"#{@article.title}\" successfully updated!"
+			redirect_to @previous_page, notice: "Article \"#{@article.title}\" successfully updated!"
 		else
-			@previous_page = params[:previous_page]
 			render :edit
 		end
 	end
