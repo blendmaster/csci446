@@ -3,4 +3,4 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 $ ->
-	$('#articles').dataTable()
+	$('#articles').dataTable sScrollY: 400, bPaginate: false

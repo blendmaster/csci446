@@ -1,6 +1,11 @@
 %tr
-  %td= article_row.title
-  %td= article_row.author
-  %td= truncate article_row.body
-  %td= article_row.created_at.strftime "%B %e, %Y"
+  %td= truncate article_row.title, length: 20
+  %td= truncate article_row.author, length: 20
+  %td= truncate article_row.body, length: 20
+  %td= article_row.created_at.strftime "%A, %B %e %Y"
+  %td
+    =link_to "Read", article_row, title: "Re-educate yourself with the doctrine of truth"
+    =link_to "Edit", edit_article_path(article_row), title: "Redact and remove the untruth planted by the non-believers"
+    =link_to "Delete", article_row, action: :delete, confirm: "Are you sure you want to delete this article?", title: "Purge all that questions the absolute authority of the overmind!"
+
 
