@@ -11,4 +11,11 @@ class ArticleTest < ActiveSupport::TestCase
 		assert articles(:one).valid?, "Article not by pat is invalid!"
 		assert articles(:by_pat).invalid?, "Article by pat is valid!"
 	end
+
+	test "edit count increment on change" do
+		a = articles(:one)
+		a.body = "new post"
+		a.save
+		assert articles(:one).edits > 1, "Edit count not incremented!"
+	end
 end
