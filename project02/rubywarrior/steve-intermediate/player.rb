@@ -5,7 +5,7 @@ class Player
   def play_turn(warrior)
 	  @warrior = warrior
 	  return rescue_ticking! if ticking_captive
-	  return if healup
+	  return healup! if warrior.health < 10
 	  return warrior.rescue! direction_of immediate_captive if immediate_captive
 	  return warrior.attack! direction_of immediate_danger if immediate_danger
 	  return adventure! direction_of captives if captives
@@ -20,26 +20,26 @@ class Player
   end
 	  
   def rescue_ticking!
-	  surroundings.each do |space|
+	  surroundings.each do |space| #if we can immediately rescue the captive
 		  return @warrior.rescue! direction_of space if space.captive? and space.ticking?
 	  end
-	  [:left, :right].each do |direction|
+	  [:left, :right].each do |direction| #bind enemies that we don't want to deal with immediately
 		  return @warrior.bind! direction if @warrior.feel(direction).enemy?
 	  end
 	  forward = @warrior.feel direction_of ticking_captive
-	  if forward.enemy?
+	  if forward.enemy? #bash our way to the captive
 		  return @warrior.attack! direction_of forward
-	  elsif forward.stairs? or !forward.empty?
+	  elsif forward.stairs? or !forward.empty? #avoid obstacles
 		  [:left, :right, :backward].each do |direction|
 			  return @warrior.walk! direction if adventurable?(@warrior.feel direction)
 		  end
 	  end
 	  @warrior.walk! direction_of forward
   end
-  def adventurable?(space)
+  def adventurable?(space) 
 	  return (!space.stairs? and space.empty?)
   end
-  def adventure!(direction)
+  def adventure!(direction) #walk towards target, avoiding stairs
 	  if @warrior.feel(direction).stairs?
 		  surroundings.shuffle.each do |space|
 			  if adventurable? space
@@ -49,9 +49,8 @@ class Player
 	  end
 	  @warrior.walk! direction
   end
-
   def direction_of(space)
-	  @warrior.direction_of(space)
+	  @warrior.direction_of space
   end
   def surroundings
 	  directions.map { |direction| @warrior.feel(direction) }
@@ -62,7 +61,7 @@ class Player
   def immediate_danger
 	  surroundings.select { |space| space.enemy? } .first
   end
-  def escape!
+  def escape! #gtfo
 	  surroundings.each do |space|
 		  if space.empty?
 			  @warrior.walk! direction_of space
@@ -71,29 +70,14 @@ class Player
 	  end
 	  return false
   end
-
   def danger
-	  @warrior.listen.each do |unit|
-		  return unit if unit.enemy?
-	  end
-	  return false
+	  @warrior.listen.select { |space| space.enemy? } .first
   end
   def captives
-	  @warrior.listen.each do |unit|
-		  return unit if unit.captive?
-	  end
-	  return false
+	  @warrior.listen.select { |space| space.captive? } .first
   end
-  def healup
-	  if @warrior.health < 10
-		  if immediate_danger
-			  return escape!
-		  else
-			  @warrior.rest!
-		  end
-	  else
-		  return false
-	  end
-	  return true
+  def healup!
+	return escape! if immediate_danger
+	@warrior.rest!
   end
 end
