@@ -4,9 +4,4 @@ class Article < ActiveRecord::Base
 
 	attr_protected :edits
 	before_update {|article| article.edits += 1}
-
-	def body_html
-		"<p> #{body.gsub /\r?\n\r?\n/, "</p><p>"} </p>"
-	end
-
 end

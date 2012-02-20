@@ -9,4 +9,4 @@
   %hgroup
     %h1= @article.title
     %h2= "by #{@article.author}. #{pluralize @article.edits, "edit"} since #{@article.created_at.strftime "%b. %e, %Y"}."
-  .body!= @article.body_html
+  .body!= simple_format @article.body
