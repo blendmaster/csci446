@@ -8,7 +8,7 @@
   %body
     -# hgroup is my least favorite html5 element ;_;
     %hgroup 
-      %h1 Articl.es
+      %h1= link_to "Articl.es", root_path
       %h2= yield :subtitle
 
     -if notice

@@ -2,11 +2,54 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+section
+  position: relative
+
 #articles
   max-height: 400px
   overflow-y: scroll
   display: block
   // firefox refuses to put scrollbars on display: table ;_;
+  a
+    color: #FF0082
+.read-link, #edit, .edit-link, #delete, .delete-link, #create-link, #email, #back
+  color: inherit
+  text-decoration: none
+  &:hover
+    text-decoration: underline
+    &:before
+      animation: icon 3s linear infinite
+  &:before
+    margin-right: 3px
+    color: hotPink
+    font-family: 'PulsarJSRegular'
+
+.read-link, .edit-link, .delete-link
+  font-size: 0
+  &:before
+    font-size: 14pt 
+
+.read-link:before
+  content: 'v'
+
+#edit:before, .edit-link:before
+  content: 'a'
+
+#delete:before, .delete-link:before
+  content: 'l'
+
+#email:before
+  content: 's'
+
+#create-link
+  font-size: 18pt
+  font-family: "Patrick Hand", "Verdana", sans-serif
+  line-height: 20px
+  position: absolute
+  top: 0
+  right: 1em
+  &:before
+    content: 'M'
 
 #controls
   padding-left: 0
@@ -15,7 +58,15 @@
     display: inline
     margin-right: 2em
 
+  a
+    color: inherit
+
+#back:before
+  content: "@"
+
 .article
+  text-align: justify
+  max-width: 40em
   h1
     font-size: 24pt
     margin: 0
@@ -24,4 +75,6 @@
     font-weight: normal
     font-size: 12pt
     margin: 0
+
+
 

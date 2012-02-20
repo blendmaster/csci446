@@ -1,10 +1,10 @@
 -title truncate @article.title
 -subtitle "What's \"Articl\" in Spanish anyway?"
 %ul#controls
-  %li=link_to "list all articles", articles_path, title: "Return to the list of all the overmind's glorious articles"
-  %li=link_to "edit", edit_article_path(@article), title: "Sculpt this article into conformance with the truth"
-  %li=link_to "delete", @article, action: :delete, confirm: "Are you sure you want to delete this article?", title: "Eliminate all the speaks ill of the overmind"
-  %li=mail_to "", "email", subject: @article.title, body: article_url(@article), title: "Spread the doctrine of truth to those not yet saved"
+  %li=link_to "list all articles", articles_path, title: "Return to the list of all the overmind's glorious articles", id: "back"
+  %li=link_to "edit", edit_article_path(@article), title: "Sculpt this article into conformance with the truth", id: "edit"
+  %li=link_to "delete", @article, action: :delete, confirm: "Are you sure you want to delete this article?", title: "Eliminate all the speaks ill of the overmind", id: "delete"
+  %li=mail_to "", "email", subject: @article.title, body: article_url(@article), title: "Spread the doctrine of truth to those not yet saved", id: "email"
 =content_tag_for :article, @article do
   %hgroup
     %h1= @article.title
