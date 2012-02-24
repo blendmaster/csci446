@@ -1,0 +1,17 @@
+- title "All Articles"
+- subtitle "...with a name .com hipsters love!"
+%section
+  %h1 All the World's Articles
+  = link_to "Create an Article", new_article_path, title: "Merge your knowledge into the overmind!", id: "create-link"
+  %table#articles
+    %thead
+      %tr
+        %th Title
+        %th Author Name
+        %th Body
+        %th Creation Date
+        %th Actions
+    %tbody= render partial: 'article_row', collection: Article.all
+
+  %footer
+    = "#{pluralize Article.count, "article"}."

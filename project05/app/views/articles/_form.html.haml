@@ -1,0 +1,4 @@
+=semantic_form_for @article do |f|
+  = f.inputs :title, :author, :body
+  = f.buttons do
+    = f.submit "Save Changes", title: "Submit your knowledge to be subsumed by the overmind"
