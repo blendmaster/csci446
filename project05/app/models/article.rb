@@ -1,6 +1,6 @@
 class Article < ActiveRecord::Base
-	validates :title, :author, :body, :edits, presence: true
-	validates :author, format: { without: /pat/i, message: "Your kind isn't allowed here, Pat!" }
+    belongs_to :author
+	validates :title, :body, :edits, :author, presence: true
 
 	attr_protected :edits
 	before_update {|article| article.edits += 1}

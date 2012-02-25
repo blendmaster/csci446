@@ -12,6 +12,11 @@ def words num
 	Wordy.words(num).map(&:capitalize).join(" ")
 end
 
-100.times do
-	Article.create title: words(3), author: words(2), body: Wordy.paragraphs(3).join("\n\n")
+# add some authors
+15.times do
+  Author.create! name: words(2)
+end
+
+150.times do
+	Article.create! title: words(3), author: Author.find(Random.rand(1..15)), body: Wordy.paragraphs(5).join("\n\n")
 end

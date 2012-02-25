@@ -28,6 +28,8 @@ gem "formtastic"
 
 gem "will_paginate"
 
+gem "paperclip"
+
 group :development do
 	gem "wordy"
 end

@@ -2,33 +2,29 @@
 
 one:
   title: MyText
-  author: MyText
+  author: one
   body: MyText
   edits: 1
 
 two:
   title: MyText
-  author: MyText
+  author: two
   body: MyText
   edits: 1
 
 no_title:
-  author: MyText
   body: MyText
-  edits: 1
-
-no_author:
-  title: MyText
-  body: MyText
+  author: two
   edits: 1
 
 no_body:
   title: MyText
+  author: two
   author: MyText
   edits: 1
 
 by_pat:
   title: MyText
-  author: Pat
+  author: pat
   body: MyText
   edits: 1
