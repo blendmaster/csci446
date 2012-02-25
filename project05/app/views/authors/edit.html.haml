@@ -3,5 +3,5 @@
 #controls
   =icon_to "Back", '@', @author, title: "Return to the page from where you came"
 %section
-  %h1= @author.name
+  %h1= "Editing \"#{@author.name}\""
   = render 'form'

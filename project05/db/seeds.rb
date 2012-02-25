@@ -13,10 +13,10 @@ def words num
 end
 
 # add some authors
-15.times do
-  Author.create! name: words(2)
+10.times do |i|
+  Author.create! name: words(2), photo: File.open("db/seed_images/#{i}.jpg")
 end
 
 150.times do
-	Article.create! title: words(3), author: Author.find(Random.rand(1..15)), body: Wordy.paragraphs(5).join("\n\n")
+	Article.create! title: words(3), author: Author.find(Random.rand(1..10)), body: Wordy.paragraphs(5).join("\n\n")
 end
