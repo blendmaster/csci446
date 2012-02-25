@@ -5,6 +5,7 @@ class ArticlesController < ApplicationController
 	end
 
 	def index
+      @articles = Article.paginate page: params[:page]
 	end
 	
 	def show

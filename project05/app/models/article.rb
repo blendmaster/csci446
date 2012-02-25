@@ -4,4 +4,6 @@ class Article < ActiveRecord::Base
 
 	attr_protected :edits
 	before_update {|article| article.edits += 1}
+    
+    self.per_page = 10
 end

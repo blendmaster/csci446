@@ -3,7 +3,9 @@
 %section
   %h1 All the World's Articles
   = link_to "Create an Article", new_article_path, title: "Merge your knowledge into the overmind!", id: "create-link"
+  %nav= will_paginate @articles
   %table#articles
+    %caption= "#{pluralize Article.count, "article"} total."
     %thead
       %tr
         %th Title
@@ -11,7 +13,5 @@
         %th Body
         %th Creation Date
         %th Actions
-    %tbody= render partial: 'article_row', collection: Article.all
-
-  %footer
-    = "#{pluralize Article.count, "article"}."
+    %tbody= render partial: 'article_row', collection: @articles
+  %nav= will_paginate @articles
