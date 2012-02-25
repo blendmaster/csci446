@@ -13,5 +13,4 @@
 //= require prefixfree.min.js
 //= require jquery
 //= require jquery_ujs
-//= require jquery.dataTables.js
 //= require_tree .
