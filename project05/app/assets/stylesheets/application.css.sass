@@ -28,6 +28,16 @@ body
 h1, h2
   font-family: "Patrick Hand"
 
+.icon
+  &:hover:before
+    animation: icon 3s linear infinite
+  &:before
+    text-decoration: none
+    content: attr(data-icon)
+    color: #FF0082
+    margin-right: 3px
+    font-family: 'PulsarJSRegular'
+
 input[type="submit"]
   cursor: pointer
   font-family: "Ruluko", "Verdana", sans-serif 

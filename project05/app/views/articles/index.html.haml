@@ -1,8 +1,8 @@
 - title "All Articles"
 - subtitle "...with a name .com hipsters love!"
-%section#articles
+%section
   %h1 All the World's Articles
-  = link_to "Create an Article", new_article_path, title: "Merge your knowledge into the overmind!", id: "create-link"
+  = icon_to "Create an Article", 'M', new_article_path, title: "Merge your knowledge into the overmind!", id: "create-link"
   %nav= will_paginate @articles
   %table#articles
     %caption= "#{pluralize Article.count, "article"} total."

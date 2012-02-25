@@ -3,9 +3,9 @@
   %td= truncate article_row.author, length: 20
   %td= truncate article_row.body, length: 20
   %td= article_row.created_at.strftime "%A, %B %e %Y"
-  %td
-    =link_to "Read", article_row, title: "Read", class: "read-link"
-    =link_to "Edit", edit_article_path(article_row), title: "Edit", class: "edit-link"
-    =link_to "Delete", article_row, method: :delete, confirm: "Are you sure you want to delete this article?", title: "Delete", class: "delete-link"
+  %td.actions
+    =icon_to "Read", 'v', article_row, title: "Read"
+    =icon_to "Edit", 'a', edit_article_path(article_row), title: "Edit"
+    =icon_to "Delete", 'l', article_row, method: :delete, confirm: "Are you sure you want to delete this article?", title: "Delete"
 
 
