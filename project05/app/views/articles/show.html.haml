@@ -8,5 +8,5 @@
 =content_tag_for :article, @article do
   %hgroup
     %h1= @article.title
-    %h2= "by #{@article.author.name}. #{pluralize @article.edits, "edit"} since #{@article.created_at.strftime "%b. %e, %Y"}."
+    %h2!= "by #{link_to @article.author, @article.author}. #{pluralize @article.edits, "edit"} since #{@article.created_at.strftime "%b. %e, %Y"}."
   .body!= simple_format @article.body

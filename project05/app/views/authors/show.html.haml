@@ -1,0 +1,17 @@
+- title @author
+- subtitle "We spent half our capital on the domain name"
+
+%ul#controls
+  %li= icon_to 'list all authors', '@', authors_path, title: "Thought this guy was a rube too huh? Check out these other authors!"
+  %li= icon_to "edit", 'a', edit_author_path(@author), title: "Retcon this author into a superhero!"
+  %li= icon_to "delete", 'l', @article, method: :delete, confirm: "Are you sure you want to delete this author and all of his articles?", title: "Yeah, we don't like this author either"
+
+= content_tag_for :article, @author do
+  %h1= @author
+  = image_tag @author.photo.url :medium
+  %section
+    %h1= "Articles written by #{@author.name}"
+    %ul#articles
+      = content_tag_for :li, @author.articles do |article|
+        =link_to article, article
+

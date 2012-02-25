@@ -1,0 +1,13 @@
+- title "Esteemed Authors"
+- subtitle "You probably haven't heard of it"
+
+%section
+  %h1 All Authors
+  = icon_to "Add an Author", 'M', new_author_path, title: "Are you a bad enough dude to write for the overmind?", id: 'create-link'
+  %ul#authors
+    = content_tag_for :li, @authors, class: 'thumb' do |author|
+      = link_to author do
+        %figure.photo
+          = image_tag author.photo.url(:thumb)
+          %figcaption= author
+  %footer= "#{pluralize Author.count, "author"} total."

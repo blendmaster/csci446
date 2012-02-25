@@ -6,4 +6,8 @@ class Article < ActiveRecord::Base
 	before_update {|article| article.edits += 1}
     
     self.per_page = 10
+
+    def to_s
+      title
+    end
 end

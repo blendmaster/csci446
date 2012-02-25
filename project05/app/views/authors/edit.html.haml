@@ -1,0 +1,7 @@
+- title "Edit Author \"#{@author.name}\""
+- subtitle "Fair-trade coffee, iPads, and V-neck tees"
+#controls
+  =icon_to "Back", '@', @author, title: "Return to the page from where you came"
+%section
+  %h1= @author.name
+  = render 'form'
