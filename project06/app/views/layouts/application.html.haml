@@ -1,0 +1,22 @@
+!!! 5
+%html
+  %head
+    %title= yield :title
+    = stylesheet_link_tag    "application", :media => "all"
+    = javascript_include_tag "application"
+    = csrf_meta_tags
+  %body
+    %header
+      -# hgroup is my least favorite html5 element ;_;
+      %hgroup 
+        %h1= link_to "Gamez", root_path
+        %h2= yield :subtitle
+      %nav
+        %ul
+
+    -if notice
+      %p#notice
+        %strong= notice
+
+    =yield
+
