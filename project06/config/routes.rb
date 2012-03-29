@@ -1,12 +1,5 @@
 Gamez::Application.routes.draw do
-  get "register" => 'users#new'
-  post "register" => 'users#create'
-  
-  # formtastic needs users_path ;_;
-  resources :users, only: [:new, :create]
+  devise_for :users, path: 'members', path_names: { sign_in: 'login', sign_out: 'logout', sign_up: 'register' }
 
-  get "login" => 'user_sessions#new'
-  post "login" => 'user_sessions#new'
-
-  root to: 'application#index'
+  root to: 'games#index'
 end

@@ -1,13 +1,9 @@
 class User < ActiveRecord::Base
-  attr_accessible :username, :email, :password, :password_confirmation, :first_name, :last_name, :photo, :role
+  # Include default devise modules. Others available are:
+  # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :trackable, :validatable
 
-  validates_presence_of :username, :email, :first_name, :last_name, :password, :role
-  
-  validates :username, uniqueness: true, length: { minimum: 6 }
-  validates :password, length: { minimum: 6 }, confirmation: true
-  
-  has_attached_file :photo, styles: { thumb: "150x150" }
-  
-  enum_attr :role, %w[Member Admin]
-  acts_as_authentic
+  # Setup accessible (or protected) attributes for your model
+  attr_accessible :email, :password, :password_confirmation, :remember_me
 end

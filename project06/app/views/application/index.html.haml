@@ -4,7 +4,7 @@
 %nav= will_paginate @games
 
 %table#games
-  %caption= "#{pluralize @games.length, "game"} total."
+  %caption= "#{pluralize Game.count, "game"} total."
   %thead
     %tr
       %th Title
