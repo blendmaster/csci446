@@ -11,13 +11,30 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120329032931) do
+ActiveRecord::Schema.define(:version => 20120329043634) do
 
   create_table "games", :force => true do |t|
     t.string   "title"
     t.string   "rating"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "users", :force => true do |t|
+    t.string   "username",                                 :null => false
+    t.string   "email",                                    :null => false
+    t.string   "crypted_password",                         :null => false
+    t.string   "password_salt",                            :null => false
+    t.string   "persistence_token",                        :null => false
+    t.string   "first_name",                               :null => false
+    t.string   "last_name",                                :null => false
+    t.string   "photo_file_name"
+    t.string   "photo_content_type"
+    t.integer  "photo_file_size"
+    t.datetime "photo_updated_at"
+    t.string   "role",               :default => "member", :null => false
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
   end
 
 end

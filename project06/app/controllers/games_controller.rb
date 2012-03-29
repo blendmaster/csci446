@@ -1,3 +1,5 @@
 class GamesController < ApplicationController
-  controls :games
+  def index
+    @games = game.paginate page: params[:page]
+  end
 end

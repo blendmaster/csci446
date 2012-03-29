@@ -11,8 +11,11 @@
       %hgroup 
         %h1= link_to "Gamez", root_path
         %h2= yield :subtitle
+      -# is nav > ul redundant? probably
       %nav
         %ul
+          %li= link_to "Log In", login_path
+          %li= link_to "Register", register_path
 
     -if notice
       %p#notice

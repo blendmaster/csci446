@@ -1,0 +1,13 @@
+-title "Register"
+-subtitle "quickly, before we become popular"
+
+%section#register
+  %h1 Register
+  %p
+    Already Registered? 
+    = link_to "Log In", login_path
+  = semantic_form_for @user, html: {action: register_path} do |f|
+    = f.inputs :username, :email, :password, :password_confirmation, :first_name, :last_name, :photo
+    = f.buttons
+
+
