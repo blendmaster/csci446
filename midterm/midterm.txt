@@ -1,0 +1,58 @@
+1. A PUT request is indempotent, so multiple equivalent PUT requests will have the same effect as just one request. POST requests are not indempotent.
+2. The target URL is relative.
+3. A relative URL has a protocol, optional subdomains, and a domain name in addition to a path.
+4. The browser would generate a GET request.
+5. The querystring is 'request_type=PUT'
+6. a title attribute.
+
+7. the database provides persistence of data that a web application uses. The web browser is the end-user client for most web applications.
+8. Yes, because the status code 200 indicates that the request was processed, which in most cases was a request for data i.e. a webpage, which will be in the response body.
+
+9.
+class Troll
+	attr_accessor :ugliness, :smelliness, :strength
+	
+	def initialize grunt = "UNGAH"
+		@grunt = grunt
+	end
+	
+	def speak
+		42.times { puts @grunt }
+	end
+	
+	def reverse
+		puts @grunt.reverse
+	end
+	
+	def self.propogate
+		Troll.new "eegah"
+	end
+end
+
+10. A method called fight.
+11. respond_to? returns true if any of the classes in of the object's class' inheritance chain defines a function given by the argument to respond_to?.
+12. boolean.
+13. an exclamation mark by convention represents a method that mutates the object it is called upon, or is otherwise 'dangerous'.
+14. Duck typing, meaning that objects are typed based on the methods they respond to (if it responds to methods like a duck, then it is a duck)
+15. An array of strings with each space separated string inside the parenthesis.
+16. yes.
+17. no, because ruby functions implicitly return the value of the last statement inside them.
+
+18. before_save, before_create, before_update, after_update
+19. 
+method action  operation
+get    index   read
+get    new     read
+post   create  create
+get    edit    read
+put    update  update
+delete destroy delete
+
+20. HTML forms only support the GET and POST methods.
+21. Rails development environments generate verbose error messages, and dynamically reload files when they change. Production environments cache more resources and hide the details of internal server errors.
+22. If the controller doesn't control a traditional RESTful resource, and the singular name makes more sense than the plural name for whatever actions the controller has.
+23. A helper method encapsulates any complex functionality needed in an application's views, and they should be defined and used instead of writing the needed functionality directly in the view template.
+
+24. A join table.
+
+25. They are not okay, and fetching all the bees and their hives associated with the flower in fewer database queries can be done by adding the include option to the association in the Flower model: 'has_many :bees, include: :hive',
