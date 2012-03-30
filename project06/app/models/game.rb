@@ -6,4 +6,10 @@ class Game < ActiveRecord::Base
   default_scope order: 'created_at DESC'
   
   @per_page = 10
+  
+  belongs_to :user
+  
+  def to_s
+    title
+  end
 end

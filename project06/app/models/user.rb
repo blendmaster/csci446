@@ -11,8 +11,11 @@ class User < ActiveRecord::Base
   validates_presence_of :username, :first_name, :last_name 
   
   has_attached_file :photo, styles: { thumb: '150x150' }
-  
+
+  has_many :games
+
   def to_s
     "#{first_name} #{last_name}"
   end
+
 end
