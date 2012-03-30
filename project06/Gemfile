@@ -19,7 +19,7 @@ gem 'haml'
 gem 'formtastic'
 gem 'paperclip'
 gem 'will_paginate'
-gem 'recaptcha'
+gem 'recaptcha', require: 'recaptcha/rails'
 gem 'enumerated_attribute'
 
 # authlogic doesn't have enough built-in magic
