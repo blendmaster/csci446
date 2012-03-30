@@ -1,0 +1,10 @@
+%section
+  %h1 Register
+  %p
+    Already registered?
+    = link_to "Log In", new_user_session_path
+  = semantic_form_for resource, url: registration_path(resource_name) do |f|
+    = f.inputs :username, :password, :password_confirmation, :first_name, :last_name, :email, :photo
+    = recaptcha_tags
+    = f.buttons do
+      = f.submit "Register!"

@@ -17,6 +17,7 @@
             %li
               Logged in as member
               = link_to current_user, members_me_path
+            %li= link_to 'My Games', members_path
             %li= link_to 'Logout', destroy_user_session_path, method: :delete
           - else
             %li= link_to "Log In", new_user_session_path

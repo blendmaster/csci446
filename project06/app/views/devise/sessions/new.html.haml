@@ -1,0 +1,11 @@
+%section
+  %h1 Log In
+  %p
+    First time here?
+    = link_to "Register", new_user_registration_path
+  = semantic_form_for resource, url: session_path(resource_name) do |f|
+    = f.inputs do
+      = f.input :username, required: true
+      = f.input :password
+    = f.buttons do
+      = f.submit "Log in"

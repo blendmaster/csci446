@@ -1,0 +1,19 @@
+- title "My Games"
+- subtitle "You probably haven't heard of them"
+
+%section
+  %h1 My Gamez
+  = link_to "Add a New Game", new_members_game_path
+  %nav= will_paginate @games
+  %table#games
+    %caption= "I've added #{pluralize current_user.games.length, "game"} total, #{"UNIMPLEMENTED"}% of which are rated."
+    %thead
+      %tr
+        %th Title
+        %th Rating
+        %th Date Added
+    %tbody
+      = content_tag_for :tr, @games do |game|
+        %td= link_to game.title, edit_members_game_path(game)
+        %td= game.rating or "Unrated"
+        %td= "#{game.created_at.strftime "%b %-d, %Y"} by me"

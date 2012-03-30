@@ -1,5 +1,5 @@
 Gamez::Application.routes.draw do
-  devise_for :users, path: 'members', path_names: { sign_in: 'login', sign_out: 'logout', sign_up: 'register' }, controllers: { registrations: "registrations"}
+  devise_for :users, path: 'members', path_names: { sign_in: 'login', sign_out: 'logout', sign_up: 'register' }, controllers: { registrations: "registrations", sessions: "sessions"}
   
   
   namespace :members do

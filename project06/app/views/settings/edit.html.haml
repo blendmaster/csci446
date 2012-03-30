@@ -1,0 +1,19 @@
+- title "Edit my Profile"
+- subtitle "Change your name and forget your past"
+
+%section
+  %h1 Edit My Information
+
+  = semantic_form_for @user, url: members_me_path, html: {method: :put} do |f|
+    = f.inputs do
+      = f.input :username, input_html: { disabled: true }
+      = f.input :password, required: false
+      = f.input :password_confirmation, required: false
+      = f.input :first_name
+      = f.input :last_name
+      = f.input :email
+      - if @user.photo
+        = image_tag @user.photo.url(:thumb)
+      = f.input :photo
+    = f.actions do
+      = f.submit "Save Changes"
