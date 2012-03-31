@@ -1,5 +1,10 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
+
+
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to root_url, :alert => exception.message
+  end
   
   # let's do some fancy metaprogramming
   def self.controls models, options = {}

@@ -1,6 +1,10 @@
-class Members::GamesController < ApplicationController
+class Members::GamesController < Members::MembersController
   before_filter only: [:show, :edit, :update, :destroy] do
-    @game = current_user.games.find params[:id]
+      @game = current_user.games.find(params[:id])
+  end
+
+  rescue_from ActiveRecord::RecordNotFound do
+    redirect_to members_games_path, alert: "That game doesn't exist!"
   end
   
   # can't use controls because it's a nested resource

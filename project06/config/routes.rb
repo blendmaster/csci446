@@ -4,8 +4,8 @@ Gamez::Application.routes.draw do
   
   namespace :members do
     resources :games
-    get 'me' => 'settings#edit'
-    put 'me' => 'settings#update'
+    get 'me' => 'members#edit', as: 'me'
+    put 'me' => 'members#update', as: 'me'
   end
   
   get 'members' => 'members/games#index'

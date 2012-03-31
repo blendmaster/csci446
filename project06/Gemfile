@@ -24,6 +24,7 @@ gem 'enumerated_attribute'
 
 # authlogic doesn't have enough built-in magic
 gem 'devise'
+gem 'cancan'
 
 # webbrick is annoying and slow
 gem 'thin'
