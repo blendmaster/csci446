@@ -5,8 +5,8 @@ class Members::GamesController < ApplicationController
   
   # can't use controls because it's a nested resource
   def index
-    # TODO somehow cache count properly to avoid double db hit
     @games = current_user.games.page params[:page]
+    @rated = 100 * (current_user.games.count(:rating).to_f / @games.total_entries)
   end
   
   def new

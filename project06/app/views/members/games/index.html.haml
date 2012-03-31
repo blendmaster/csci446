@@ -6,7 +6,7 @@
   = link_to "Add a New Game", new_members_game_path
   %nav= will_paginate @games
   %table#games
-    %caption= "I've added #{pluralize current_user.games.length, "game"} total, #{"UNIMPLEMENTED"}% of which are rated."
+    %caption= "I've added #{pluralize @games.total_entries, "game"} total, #{number_to_percentage @rated, precision: 0} of which are rated."
     %thead
       %tr
         %th Title

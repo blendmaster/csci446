@@ -1,5 +1,5 @@
 class GamesController < ApplicationController
   def index
-    @games = Game.paginate page: params[:page]
+    @games = Game.includes(:user).paginate page: params[:page]
   end
 end

@@ -16,4 +16,4 @@
 *.swp
 
 # ignore images
-/public/system
+/public/system/*
