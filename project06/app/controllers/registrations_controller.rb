@@ -3,10 +3,11 @@ class RegistrationsController < Devise::RegistrationsController
     members_path
   end
 
-  # overridden to use recaptcha, and custom flash
+  # overridden to use recaptcha, and custom flash, and set role to member
   def create
     if verify_recaptcha
       build_resource
+      resource.role = Role.member
       if resource.save
         if resource.active_for_authentication?
           set_flash_message :notice, :signed_up, user: resource if is_navigational_format?

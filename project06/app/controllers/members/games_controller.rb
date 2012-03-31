@@ -10,7 +10,7 @@ class Members::GamesController < Members::MembersController
   # can't use controls because it's a nested resource
   def index
     @games = current_user.games.page params[:page]
-    @rated = 100 * (current_user.games.count(:rating).to_f / @games.total_entries)
+    @rated = 100 * (current_user.games.count(:rating).to_f / @games.total_entries) 
   end
   
   def new
