@@ -9,7 +9,7 @@ class Members::MembersController < ApplicationController
     @user = current_user
     # if user didn't edit password
     # update_attributes is trying to blank it out ;_;
-    # this is a bad check to have to do, and rails should feel bad
+    # this is a bad check to have to do, and devise should feel bad
     # about it
     unless params[:user][:password].length > 0
       params[:user][:password] = @user.password 
