@@ -1,6 +1,7 @@
 class Members::GamesController < Members::MembersController
-  before_filter only: [:show, :edit, :update, :destroy] do
-      @game = current_user.games.find(params[:id])
+  before_filter only: [:show, :edit, :destroy] do
+    @game = current_user.games.find(params[:id])
+    authorize! :manage, @game
   end
 
   rescue_from ActiveRecord::RecordNotFound do
@@ -11,14 +12,17 @@ class Members::GamesController < Members::MembersController
   def index
     @games = current_user.games.page params[:page]
     @rated = 100 * (current_user.games.count(:rating).to_f / @games.total_entries) 
+    authorize! :index, Game # can't pass in @games, apparently
   end
   
   def new
     @game = current_user.games.build
+    authorize! :new, @game
   end
   
   def create
     @game = current_user.games.build params[:game]
+    authorize! :create, @game
     if @game.save
       redirect_to members_games_path, notice: "added #{@game}!"
     else
@@ -34,6 +38,7 @@ class Members::GamesController < Members::MembersController
 
   def update
     @game = current_user.games.find params[:id]
+    authorize! :update, @game
     if @game.update_attributes params[:game]
       redirect_to members_games_path, notice: "updated #{@game}!"
     else

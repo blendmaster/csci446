@@ -1,7 +1,7 @@
 class SessionsController < Devise::SessionsController
 
   def after_sign_in_path_for resource
-    members_path
+    resource.admin? ? admin_root_path : members_path
   end
 
   # overridding this to customize flash

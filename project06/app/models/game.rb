@@ -1,6 +1,6 @@
 class Game < ActiveRecord::Base
   attr_accessible :title, :rating
-  attr_accessible :user_id, as: :admin
+  attr_accessible :title, :rating, :user_id, as: :admin
 
   validates_presence_of :title
 

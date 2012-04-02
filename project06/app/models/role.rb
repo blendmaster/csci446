@@ -8,11 +8,11 @@ class Role < ActiveRecord::Base
   end
 
   def self.admin
-    @admin ||= where('name = "Admin"').first
+    @@admin_role ||= where('name = "Admin"').first
   end
 
   def self.member
-    @member ||= where('name="Member"').first
+    @@member_role ||= where('name="Member"').first
   end
 end
 

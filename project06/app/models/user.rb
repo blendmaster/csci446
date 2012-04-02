@@ -4,12 +4,14 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  # as regular user
-  attr_accessible :email, :password, :password_confirmation, :remember_me, :first_name, :last_name, :photo
+  # by default, for devise use (need :username for login)
+  attr_accessible :username, :email, :password, :password_confirmation, :remember_me, :first_name, :last_name, :photo
   
   # on creation
   attr_accessible :username, :email, :password, :password_confirmation, :remember_me, :first_name, :last_name, :photo, as: :new_user
 
+  # on user edit, restrict these
+  attr_protected :username, :role, as: :member
   # users can't change these
   attr_accessible :username, :role, as: :admin
   
@@ -24,6 +26,9 @@ class User < ActiveRecord::Base
 
   def admin?
     role == Role.admin
+  end
+  def member?
+    role == Role.member
   end
 
   def to_s
