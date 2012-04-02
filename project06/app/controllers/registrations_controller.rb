@@ -6,8 +6,10 @@ class RegistrationsController < Devise::RegistrationsController
   # overridden to use recaptcha, and custom flash, and set role to member
   def create
     if verify_recaptcha
-      build_resource
-      resource.role = Role.member
+      # build_resource
+      # not using helper, because it doesn't use scoped mass assignment
+      resource = resource_class.new params[resource_name], as: :new_user
+      resource.role = Role.member # by default
       if resource.save
         if resource.active_for_authentication?
           set_flash_message :notice, :signed_up, user: resource if is_navigational_format?
