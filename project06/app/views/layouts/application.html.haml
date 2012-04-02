@@ -15,9 +15,12 @@
         %ul
           - if user_signed_in?
             %li
-              Logged in as member
+              = "Logged in as #{current_user.role}"
               = link_to current_user, members_me_path
-            %li= link_to 'My Games', members_path
+            - if current_user.admin?
+              %li= link_to 'Admin', admin_root_path
+            - else
+              %li= link_to 'My Games', members_path
             %li= link_to 'Logout', destroy_user_session_path, method: :delete
           - else
             %li= link_to "Log In", new_user_session_path
@@ -29,6 +32,10 @@
     -if alert
       %p#errors
         %strong= alert
+
+    - if user_signed_in? and current_user.admin?
+      %ul#admin_menu
+        %li= link_to 'Games', admin_root_path
 
     =yield
 

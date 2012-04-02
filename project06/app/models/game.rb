@@ -1,5 +1,5 @@
 class Game < ActiveRecord::Base
-  attr_accessible :title, :rating
+  attr_accessible :title, :rating, :user_id
   validates_presence_of :title
   enum_attr :rating, %w[Amazing Good Meh Horrible]
   

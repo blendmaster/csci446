@@ -1,0 +1,21 @@
+- title "Games"
+- subtitle "my tastes > your tastes"
+
+%section
+  %h1= pluralize Game.count, "Total Game"
+  %p= link_to 'Add a game', new_admin_game_path
+
+  %nav= will_paginate @games
+
+  %table#games
+    %thead
+      %tr
+        %th Title
+        %th Rating
+        %th Date Added
+    %tbody
+      =content_tag_for :tr, @games do |game|
+        %td= link_to game.title, edit_admin_game_path(game)
+        %td= game.rating or "Unrated"
+        %td= "#{game.created_at.strftime "%b %-d, %Y"} by #{game.user == current_user ? "me" : game.user}"
+

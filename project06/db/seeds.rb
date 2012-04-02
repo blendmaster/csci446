@@ -8,3 +8,6 @@
 #
 Role.create! name: "Admin"
 Role.create! name: "Member"
+
+User.create! username: 'member', password: 'password', password_confirmation: 'password', first_name: 'Joe', last_name: 'Bob', role: Role.member, email: 'a@b.c'
+User.create! username: 'administrator', password: 'password', password_confirmation: 'password', first_name: 'Jim', last_name: 'Bob', role: Role.admin, email: 'b@c.d'

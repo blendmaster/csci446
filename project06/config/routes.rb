@@ -10,5 +10,10 @@ Gamez::Application.routes.draw do
   
   get 'members' => 'members/games#index'
 
+  namespace :admin do
+    resources :games, :users, :roles
+    root to: 'admin#index'
+  end
+
   root to: 'games#index'
 end
