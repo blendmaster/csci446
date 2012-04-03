@@ -17,3 +17,6 @@
 
 # ignore images
 /public/system/*
+
+# ignore sass cache
+/app/assets/stylesheets/.sass-cache

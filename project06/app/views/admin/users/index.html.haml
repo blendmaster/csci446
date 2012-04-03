@@ -15,8 +15,10 @@
       = content_tag_for :tr, @users do |u|
         %td= link_to u, edit_admin_user_path(u)
         %td= u.username
-        -# I swear that devise is lying to me about last_sign_in_at
-        -# oh well :/
-        %td= "#{distance_of_time_in_words_to_now u.last_sign_in_at} ago"
+        %td
+          - if u.last_sign_in_at # stupid distance helper not handling nil
+            = "#{distance_of_time_in_words_to_now u.last_sign_in_at} ago"
+          - else
+            Never
         %td= u.games.size
 
