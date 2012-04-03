@@ -1,0 +1,19 @@
+- title "Edit User"
+
+%section
+  %h1= "Edit #{@user}"
+
+  = semantic_form_for @user, url: admin_user_path(@user), html: {method: :put} do |f|
+    = f.inputs do
+      = f.input :username
+      = f.input :password, required: false
+      = f.input :password_confirmation, required: false
+      = f.input :first_name
+      = f.input :last_name
+      = f.input :email
+      - if @user.photo
+        = image_tag @user.photo.url(:thumb)
+      = f.input :photo
+      = f.input :role
+    = f.actions do
+      = f.submit "Save Changes"

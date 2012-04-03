@@ -10,7 +10,7 @@ class Game < ActiveRecord::Base
   
   @per_page = 10 # for will_paginate
   
-  belongs_to :user
+  belongs_to :user, counter_cache: true
   
   def to_s
     title

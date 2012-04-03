@@ -10,10 +10,10 @@ class User < ActiveRecord::Base
   # on creation
   attr_accessible :username, :email, :password, :password_confirmation, :remember_me, :first_name, :last_name, :photo, as: :new_user
 
-  # on user edit, restrict these
-  attr_protected :username, :role, as: :member
-  # users can't change these
-  attr_accessible :username, :role, as: :admin
+  # on user edit, restrict to these
+  attr_accessible :email, :password, :password_confirmation, :remember_me, :first_name, :last_name, :photo, as: :member
+  # admin can change everything
+  attr_accessible :username, :email, :password, :password_confirmation, :remember_me, :first_name, :last_name, :photo, :role_id, as: :admin
   
   validates :username, uniqueness: true, length: { minimum: 6 }
   validates_presence_of :username, :first_name, :last_name, :role

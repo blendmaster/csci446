@@ -1,0 +1,22 @@
+- title "Manage Users"
+
+%section
+  %h1 Users
+
+  = will_paginate @users
+  %table#users
+    %thead
+      %tr
+        %th Name
+        %th Username
+        %th Last Login
+        %th Number of Games
+    %tbody
+      = content_tag_for :tr, @users do |u|
+        %td= link_to u, edit_admin_user_path(u)
+        %td= u.username
+        -# I swear that devise is lying to me about last_sign_in_at
+        -# oh well :/
+        %td= "#{distance_of_time_in_words_to_now u.last_sign_in_at} ago"
+        %td= u.games.size
+
