@@ -22,6 +22,8 @@ class User < ActiveRecord::Base
 
   has_many :games
 
+  # I swear rails isn't caching this properly, because every
+  # page load hits the Db for this. lameee
   belongs_to :role
 
   def admin?
