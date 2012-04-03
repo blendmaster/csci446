@@ -1,0 +1,7 @@
+- title 'edit role'
+
+%section
+  %h1 Edit role
+  =semantic_form_for @role, url: admin_role_path(@role) do |f|
+    = f.inputs :name
+    = f.actions

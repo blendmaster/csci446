@@ -1,0 +1,13 @@
+- title "Roles"
+
+%section
+  %h1 Roles
+  %table#roles
+    %thead
+      %tr
+        %th Name
+        %th Number of Users
+    %tbody
+      = content_tag_for :tr, @roles do |r|
+        %td= link_to r, edit_admin_role_path(r)
+        %td= r.users.count
