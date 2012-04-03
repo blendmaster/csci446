@@ -16,7 +16,7 @@
 *.swp
 
 # ignore images
-/public/system/*
+/public/system
 
 # ignore sass cache
 /app/assets/stylesheets/.sass-cache

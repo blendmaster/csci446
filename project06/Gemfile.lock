@@ -129,6 +129,7 @@ GEM
     warden (1.1.1)
       rack (>= 1.0)
     will_paginate (3.0.3)
+    wordy (1.1.0)
 
 PLATFORMS
   ruby
@@ -149,3 +150,4 @@ DEPENDENCIES
   thin
   uglifier (>= 1.0.3)
   will_paginate
+  wordy

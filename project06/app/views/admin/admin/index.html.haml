@@ -17,5 +17,8 @@
       =content_tag_for :tr, @games do |game|
         %td= link_to game.title, edit_admin_game_path(game)
         %td= game.rating or "Unrated"
-        %td= "#{game.created_at.strftime "%b %-d, %Y"} by #{game.user == current_user ? "me" : game.user}"
+        %td
+          = game.created_at.strftime "%b %-d, %Y"
+          by 
+          = link_to((game.user == current_user ? "me" : game.user) ,edit_admin_user_path(game.user))
 

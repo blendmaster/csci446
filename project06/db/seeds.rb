@@ -6,8 +6,18 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 #
-Role.create! name: "Admin"
-Role.create! name: "Member"
+Role.find_or_create_by_name "Admin"
+Role.find_or_create_by_name "Member"
 
-User.create!({ username: 'member', password: 'password', password_confirmation: 'password', first_name: 'Joe', last_name: 'Bob', role: Role.member, email: 'a@b.c' }, without_protection: true)
-User.create!( {username: 'administrator', password: 'password', password_confirmation: 'password', first_name: 'Jim', last_name: 'Bob', role: Role.admin, email: 'b@c.d'}, without_protection: true)
+User.create({ username: 'member', password: 'password', password_confirmation: 'password', first_name: 'Joe', last_name: 'Bob', role: Role.member, email: 'a@b.c' }, without_protection: true)
+User.create( {username: 'administrator', password: 'password', password_confirmation: 'password', first_name: 'Jim', last_name: 'Bob', role: Role.admin, email: 'b@c.d'}, without_protection: true)
+
+# add some games
+require 'wordy'
+
+ratings = %w[Amazing Good Meh Horrible]
+
+users = User.all.map &:id
+50.times do |i|
+  Game.create!({title: Wordy.words(1).join(" "), rating: ratings.sample, user_id: users.sample}, without_protection: true)
+end

@@ -3,6 +3,8 @@ class Role < ActiveRecord::Base
   validates_presence_of :name
   has_many :users
 
+  default_scope order: 'name ASC'
+
   def to_s
     name
   end

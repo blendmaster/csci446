@@ -26,6 +26,8 @@ class User < ActiveRecord::Base
   # page load hits the Db for this. lameee
   belongs_to :role
 
+  default_scope order: 'last_name ASC'
+
   def admin?
     role == Role.admin
   end
