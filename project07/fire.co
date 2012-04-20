@@ -18,7 +18,12 @@ window.requestAnimationFrame =
 # balancing constants
 stop = [ 5 13 19 ] # where there is a trampoline check 
 end = 21positions
-move_delay = 50frames
+move_delay = 43frames
+std_dev = 5moves # controls how random next players are
+# exponential difficulty curve, giving a new player at an average of
+# 7 moves after 100 turns
+# FIXME this is a stupid difficulty curve
+difficulty_curve = Math.pow( Math.E, Math.log( 2moves / 100points ) )
 
 # game data, closed over in functions
 people = void # list of people on screen
@@ -26,6 +31,7 @@ trampoline = void # position of trampoline
 points = void
 mistakes = void
 drop_position = void # used to draw dropped person
+next_person = void # the number of frames until the next person appears
 
 draw = !->
 	ctx.clearRect 0 0 width, height
@@ -35,7 +41,7 @@ draw = !->
 	ctx.fillText "mistakes: #{mistakes}" 150 20
 
 	# draw person
-	ctx.fillText "person: #{p.position}" p.position, 50 for p of people
+	ctx.fillText "person: #{p.position}" p.position, 50+15*i for p,i of people
 
 tick = !->
 	dropped = false # if somebody got dropped
@@ -49,7 +55,7 @@ tick = !->
 			
 			if stop.indexOf(pos) is not -1 # if person was at trampoline position
 				unless p.bounced
-					return game_over! if ++mistakes > 3 # increment and check for gameover
+					return game_over! if ++mistakes is 3 # increment and check for gameover
 					dropped = p
 					break # stop processing people
 				p.bounced = false # reset flag for next bounce
@@ -63,15 +69,28 @@ tick = !->
 	if dropped
 		people.splice people.indexOf( dropped ), 1 # remove person
 		drop_position := pos # set where drop animation starts
+
+		# temporarily prevent trampoline movement
+		document.removeEventListener \keydown key_move
+		canvas.removeEventListener \click click_move
 		drop_animation!
 	else
 		# pop first person if they're saved
-		if people.0?position > end
+		if people.0?position is end
 			++points
 			people.shift!
 
-		# TODO add people	
-		
+		if --next_person is 0
+			people.push {position:0 delay: move_delay}
+			# get a normally-distributed number through the central limit theorem
+			avg = 0
+			avg += Math.random! * 2 - 1 for i til 16 # [-1, 1) 
+			avg /= 16
+			next_person := 
+				( Math.floor ( avg * std_dev + end/2 - Math.pow(difficulty_curve,points) ) * move_delay ) >? move_delay
+
+		# TODO handle 2nd window jumper
+
 		draw! if dirty
 		window.requestAnimationFrame tick # next frame
 				
@@ -79,9 +98,23 @@ drop_animation = !->
 	draw!
 	# TODO walk off screen
 	ctx.fillText "dropped!" 150 150
-	# TODO continue
+	
+	# re-add trampoline events and start game again
+	setTimeout do
+		->
+			document.addEventListener \keydown key_move
+			canvas.addEventListener \click click_move
+
+			# create new person if there aren't any on screen 
+			# so player won't get bored
+			next_person := 1
+			draw!
+			tick!
+		1000ms
 
 game_over = !->
+	draw!
+	ctx.fillText "game over!" 150 130
 	ctx.fillText "click to start game" 150 150
 	document.removeEventListener \keydown key_move
 	canvas.removeEventListener \click click_move
@@ -93,6 +126,10 @@ start_game = !->
 	trampoline := 1 # middle
 	points := 0
 	mistakes := 0
+
+	# add the next person after the first person is saved
+	# after that, tick! will set next_person as a poisson process
+	next_person := end * move_delay
 
 	# TODO init graphics positions
 
@@ -116,13 +153,15 @@ key_move = !({keyCode}: e) ->
 	else if keyCode is 39 and trampoline < 2 # right
 		++trampoline
 	else
-		trampoline := that if move[keyCode] # direct movement
+		trampoline := that if move[keyCode]? # direct movement
 	draw!
 	e.preventDefault!
 
 click_move = !({clientX: x}: e) ->
 	# 3 equal-width zones to click
-	trampoline := Math.floor( x / width * 3 )
+	# FIXME padding creates extra clicky area
+	# and clientX needs to consider left side of canvas
+	trampoline := Math.floor( x / width * 3 ) 
 	draw!
 	e.preventDefault!
 
