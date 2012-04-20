@@ -6,6 +6,11 @@ canvas = document.getElementById \canvas
 {width, height} = canvas
 ctx = canvas.getContext \2d
 
+# image assets
+assets = {}
+for img of document.getElementById \assets .children
+	assets[img.id] = img
+
 # good ol vendor prefixes
 window.requestAnimationFrame = 
 	window.requestAnimationFrame or
@@ -14,6 +19,14 @@ window.requestAnimationFrame =
 	window.msRequestAnimationFrame or
 	window.oRequestAnimationFrame or
 	-> window.setTimeout it, 1000ms / 60frames
+
+window.cancelAnimationFrame = 
+	window.cancelAnimationFrame or
+	window.mozCancelAnimationFrame or
+	window.webkitCancelAnimationFrame or
+	window.msCancelAnimationFrame or
+	window.oCancelAnimationFrame or
+	-> window.clearTimeout it
 
 # balancing constants
 stop = [ 5 13 19 ] # where there is a trampoline check 
@@ -27,7 +40,7 @@ difficulty_curve = Math.pow( Math.E, Math.log( 2moves / 5points ) )
 
 # high score handling
 if localStorage?\high_scores
-	high_scores = JSON.parse that
+	high_scores = JSON.parse that # localstorage only stores strings
 else 
 	high_scores = 
 		* name: \mario score: 384
@@ -46,14 +59,21 @@ add_high_score = !(points) ->
 	high_scores.:=sort( (a,b) -> b.score - a.score ).slice 0 5
 	localStorage.\high_scores = JSON.stringify( high_scores ) if localStorage # persist
 
+high_scores_el = document.getElementById \high-scores
 
-draw_high_scores = !->
-	ctx.fillText "High Scores" 100 180
-	y = 190
-	for h of high_scores
-		ctx.fillText "#{h.name} : #{h.score}" 100 (y += 10)
+hide_high_scores = -> high_scores_el.hidden = true
+
+show_high_scores = !->
+	list = ''
+	list += "<li>#{h.name} : #{h.score}</li>" for h of high_scores
+
+	high_scores_el.innerHTML = list
+	high_scores_el.hidden = false # show element
 
 # game data, closed over in functions
+# all initialized to void, so coco will declare them in the right scope
+# in vanilla javascript, they'd be empty var declarations, but such is the
+# price we must pay for non-vanilla javascript
 people = void # list of people on screen
 trampoline = void # position of trampoline
 points = void
@@ -141,18 +161,31 @@ drop_animation = !->
 		1000ms
 
 game_over = !->
-	draw!
-	ctx.fillText "game over!" 150 130
-	ctx.fillText "click to start game" 150 150
-	draw_high_scores!
-
 	if points > high_score_threshold
 		add_high_score points
+	
+	show_high_scores!
 
 	document.removeEventListener \keydown key_move
-	canvas.removeEventListener \click click_move
+	document.removeEventListener \click click_move
 
-	canvas.addEventListener \click start_game # restart game
+	document.addEventListener \click click_start
+
+	# cycle gameover for 5 seconds, then display title
+	cycles = 50
+	current_gameover = 0
+	ctx.drawImage assets.gameover1, 0 0 width, height
+	cycle_gameover = !->
+		ctx.clearRect 0 0 width, height
+		current_gameover := (current_gameover + 1) % 3
+		ctx.drawImage assets["gameover#{current_gameover + 1}"], 0 0 width, height
+		if --cycles > 0
+			window.setTimeout cycle_gameover, 100ms
+		else
+			cycle_title!
+
+	window.setTimeout cycle_gameover, 100ms
+		
 
 start_game = !->
 	people := [{position: 0, delay: move_delay}] # start with initial person
@@ -164,45 +197,57 @@ start_game = !->
 	# after that, tick! will set next_person as a poisson process
 	next_person := end * move_delay
 
-	# TODO init graphics positions
+	window.clearTimeout cycle_timeout # stop title animation
+	window.cancelAnimationFrame cycle_frame # edge case: stop title animation wrapper
 
 	document.addEventListener \keydown key_move
-	canvas.addEventListener \click click_move
+	document.addEventListener \click click_move
 	
-	canvas.removeEventListener \click start_game
+	document.removeEventListener \click click_start
 	
+	hide_high_scores!
+
 	draw!
 	tick!
 
-move = # hash to convert from keycode to position
-	81: 0 # Q
-	87: 1 # W
-	69: 2 # E
-
-	90: 0 # Z 
-	88: 1 # X
-	67: 2 # C
+click_start = ({button}: e) ->
+	if button is 0 # only left click
+		e.preventDefault!
+		start_game!
 
 key_move = !({keyCode}: e) -> 
 	if keyCode is 37 and trampoline > 0 # left
 		--trampoline
 	else if keyCode is 39 and trampoline < 2 # right
 		++trampoline
-	else
-		trampoline := that if move[keyCode]? # direct movement
 	# TODO PAUSE
 	draw!
 	e.preventDefault!
 
-click_move = !({clientX: x}: e) ->
-	# 3 equal-width zones to click
-	# FIXME padding creates extra clicky area
-	# and clientX needs to consider left side of canvas
-	trampoline := Math.floor( x / width * 3 ) 
-	draw!
-	e.preventDefault!
+click_move = !({clientX: x, button}: e) ->
+	if button is 0
+		# 3 equal-width zones to click
+		# FIXME not considering canvas element 
+		trampoline := Math.floor( x / width * 3 ) 
+		draw!
+		e.preventDefault!
+
+# cheesy hand-drawn animation effect
+current_title = 0
+cycle_timeout = void
+cycle_frame = void # Additional variable to cancel animation frame
+cycle_title = !->
+	ctx.clearRect 0 0 width, height
+	current_title := (current_title + 1 ) % 3
+	ctx.drawImage assets["title#{current_title+1}"], 0 0 width, height
+	
+	# wrapped in requestAnimationFrame so title won't cycle
+	# when page isn't visible
+	cycle_frame := window.requestAnimationFrame ->
+		cycle_timeout := setTimeout cycle_title, 100ms
 
 # add initial click to start game
-ctx.fillText "click to start game" 150 150
-draw_high_scores!
-canvas.addEventListener \click start_game # restart game
+cycle_title!
+show_high_scores!
+document.addEventListener \click click_start 
+

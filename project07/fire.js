@@ -1,10 +1,18 @@
 (function(){
-  var canvas, width, height, ctx, stop, end, move_delay, std_dev, difficulty_curve, that, high_scores, high_score_threshold, add_high_score, draw_high_scores, people, trampoline, points, misses, drop_position, next_person, draw, tick, drop_animation, game_over, start_game, move, key_move, click_move;
+  var canvas, width, height, ctx, assets, img, stop, end, move_delay, std_dev, difficulty_curve, that, high_scores, high_score_threshold, add_high_score, high_scores_el, hide_high_scores, show_high_scores, people, trampoline, points, misses, drop_position, next_person, draw, tick, drop_animation, game_over, start_game, click_start, key_move, click_move, current_title, cycle_timeout, cycle_frame, cycle_title, _i, _ref, _len;
   canvas = document.getElementById('canvas');
   width = canvas.width, height = canvas.height;
   ctx = canvas.getContext('2d');
+  assets = {};
+  for (_i = 0, _len = (_ref = document.getElementById('assets').children).length; _i < _len; ++_i) {
+    img = _ref[_i];
+    assets[img.id] = img;
+  }
   window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame || function(it){
     return window.setTimeout(it, 1000 / 60);
+  };
+  window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame || window.oCancelAnimationFrame || function(it){
+    return window.clearTimeout(it);
   };
   stop = [5, 13, 19];
   end = 21;
@@ -40,8 +48,6 @@
       return b;
     }
   }).score;
-  console.log(high_score_threshold);
-  console.log(high_scores);
   add_high_score = function(points){
     high_scores.push({
       name: window.prompt('You got a high score! enter your name:') || 'anonymous',
@@ -54,15 +60,19 @@
       localStorage['high_scores'] = JSON.stringify(high_scores);
     }
   };
-  add_high_score(500);
-  draw_high_scores = function(){
-    var y, h, _i, _ref, _len;
-    ctx.fillText("High Scores", 100, 180);
-    y = 190;
+  high_scores_el = document.getElementById('high-scores');
+  hide_high_scores = function(){
+    return high_scores_el.hidden = true;
+  };
+  show_high_scores = function(){
+    var list, h, _i, _ref, _len;
+    list = '';
     for (_i = 0, _len = (_ref = high_scores).length; _i < _len; ++_i) {
       h = _ref[_i];
-      ctx.fillText(h.name + " : " + h.score, 100, y += 10);
+      list += "<li>" + h.name + " : " + h.score + "</li>";
     }
+    high_scores_el.innerHTML = list;
+    high_scores_el.hidden = false;
   };
   people = void 8;
   trampoline = void 8;
@@ -147,16 +157,28 @@
     }, 1000);
   };
   game_over = function(){
-    draw();
-    ctx.fillText("game over!", 150, 130);
-    ctx.fillText("click to start game", 150, 150);
-    draw_high_scores();
+    var cycles, current_gameover, cycle_gameover;
     if (points > high_score_threshold) {
       add_high_score(points);
     }
+    show_high_scores();
     document.removeEventListener('keydown', key_move);
-    canvas.removeEventListener('click', click_move);
-    canvas.addEventListener('click', start_game);
+    document.removeEventListener('click', click_move);
+    document.addEventListener('click', click_start);
+    cycles = 50;
+    current_gameover = 0;
+    ctx.drawImage(assets.gameover1, 0, 0, width, height);
+    cycle_gameover = function(){
+      ctx.clearRect(0, 0, width, height);
+      current_gameover = (current_gameover + 1) % 3;
+      ctx.drawImage(assets["gameover" + (current_gameover + 1)], 0, 0, width, height);
+      if (--cycles > 0) {
+        window.setTimeout(cycle_gameover, 100);
+      } else {
+        cycle_title();
+      }
+    };
+    window.setTimeout(cycle_gameover, 100);
   };
   start_game = function(){
     people = [{
@@ -167,43 +189,55 @@
     points = 0;
     misses = 0;
     next_person = end * move_delay;
+    window.clearTimeout(cycle_timeout);
+    window.cancelAnimationFrame(cycle_frame);
     document.addEventListener('keydown', key_move);
-    canvas.addEventListener('click', click_move);
-    canvas.removeEventListener('click', start_game);
+    document.addEventListener('click', click_move);
+    document.removeEventListener('click', click_start);
+    hide_high_scores();
     draw();
     tick();
   };
-  move = {
-    81: 0,
-    87: 1,
-    69: 2,
-    90: 0,
-    88: 1,
-    67: 2
+  click_start = function(e){
+    var button;
+    button = e.button;
+    if (button === 0) {
+      e.preventDefault();
+      return start_game();
+    }
   };
   key_move = function(e){
-    var keyCode, that;
+    var keyCode;
     keyCode = e.keyCode;
     if (keyCode === 37 && trampoline > 0) {
       --trampoline;
     } else if (keyCode === 39 && trampoline < 2) {
       ++trampoline;
-    } else {
-      if ((that = move[keyCode]) != null) {
-        trampoline = that;
-      }
     }
     draw();
     e.preventDefault();
   };
   click_move = function(e){
-    var x;
-    x = e.clientX;
-    trampoline = Math.floor(x / width * 3);
-    draw();
-    e.preventDefault();
+    var x, button;
+    x = e.clientX, button = e.button;
+    if (button === 0) {
+      trampoline = Math.floor(x / width * 3);
+      draw();
+      e.preventDefault();
+    }
   };
-  ctx.fillText("click to start game", 150, 150);
-  draw_high_scores();
-  canvas.addEventListener('click', start_game);
+  current_title = 0;
+  cycle_timeout = void 8;
+  cycle_frame = void 8;
+  cycle_title = function(){
+    ctx.clearRect(0, 0, width, height);
+    current_title = (current_title + 1) % 3;
+    ctx.drawImage(assets["title" + (current_title + 1)], 0, 0, width, height);
+    cycle_frame = window.requestAnimationFrame(function(){
+      return cycle_timeout = setTimeout(cycle_title, 100);
+    });
+  };
+  cycle_title();
+  show_high_scores();
+  document.addEventListener('click', click_start);
 }).call(this);
