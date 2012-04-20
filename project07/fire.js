@@ -1,4 +1,17 @@
 (function(){
+  var el, hide, show, _i, _ref, _len;
+  for (_i = 0, _len = (_ref = document.querySelectorAll('*[hidden]')).length; _i < _len; ++_i) {
+    el = _ref[_i];
+    el.style.display = 'none';
+  }
+  hide = function(it){
+    it.hidden = true;
+    return it.style.display = 'none';
+  };
+  show = function(it){
+    it.hidden = false;
+    return it.style.removeProperty('display');
+  };
   window.addEventListener('load', function(){
     var canvas, width, height, ctx, assets, img, stop, end, move_delay, trampoline_delay, std_dev, difficulty_curve, that, high_scores, high_score_threshold, add_high_score, high_scores_el, hide_high_scores, show_high_scores, people, trampoline, points, misses, next_person, frame, draw, tick, walk_off_positions, drop_animation, game_over, start_game, click_start, key_move, click_move, pause, click_unpause, current_title, cycle_timeout, cycle_frame, cycle_title, _i, _ref, _len;
     canvas = document.getElementById('canvas');
@@ -22,7 +35,7 @@
     };
     stop = [4, 12, 18];
     end = 21;
-    move_delay = 40;
+    move_delay = 38;
     trampoline_delay = 8;
     std_dev = 5;
     difficulty_curve = Math.pow(Math.E, Math.log(2 / 5));
@@ -69,7 +82,7 @@
     };
     high_scores_el = document.getElementById('high-scores');
     hide_high_scores = function(){
-      return high_scores_el.hidden = true;
+      return hide(high_scores_el);
     };
     show_high_scores = function(){
       var list, h, _i, _ref, _len;
@@ -79,7 +92,7 @@
         list += "<li>" + h.name + " : " + h.score + "</li>";
       }
       high_scores_el.innerHTML = list;
-      high_scores_el.hidden = false;
+      show(high_scores_el);
     };
     people = void 8;
     trampoline = void 8;

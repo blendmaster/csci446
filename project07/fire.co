@@ -1,9 +1,22 @@
+# IE9 fix, since it doesn't support the hidden attribute
+for el of document.querySelectorAll '*[hidden]'
+	el.style.display = \none
+
+hide = ->
+	it.hidden = true
+	it.style.display = \none
+
+show = ->
+	it.hidden = false
+	it.style.removeProperty \display
+
 <- window.addEventListener \load
 # DOM interfacing
 
 canvas = document.getElementById \canvas
 {width, height} = canvas
 ctx = canvas.getContext \2d
+
 
 # image assets
 assets = {}
@@ -62,7 +75,7 @@ high_score_threshold = # minimum high score
 
 add_high_score = !(points) ->
 	high_scores.push do
-		name: window.prompt('You got a high score! enter your name:').substr(0,10) || \anonymous
+		name: window.prompt('You got a high score! enter your name:','').substr(0,10) || \anonymous
 		score: points
 
 	# sort decending and take 5 highest
@@ -71,14 +84,14 @@ add_high_score = !(points) ->
 
 high_scores_el = document.getElementById \high-scores
 
-hide_high_scores = -> high_scores_el.hidden = true
+hide_high_scores = -> hide high_scores_el
 
 show_high_scores = !->
 	list = ''
 	list += "<li>#{h.name} : #{h.score}</li>" for h of high_scores
 
 	high_scores_el.innerHTML = list
-	high_scores_el.hidden = false # show element
+	show high_scores_el
 
 # game data, closed over in functions
 # all initialized to void, so coco will declare them in the right scope
