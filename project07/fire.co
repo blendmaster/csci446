@@ -18,18 +18,46 @@ window.requestAnimationFrame =
 # balancing constants
 stop = [ 5 13 19 ] # where there is a trampoline check 
 end = 21positions
-move_delay = 43frames
+move_delay = 35frames
 std_dev = 5moves # controls how random next players are
 # exponential difficulty curve, giving a new player at an average of
 # 7 moves after 100 turns
 # FIXME this is a stupid difficulty curve
-difficulty_curve = Math.pow( Math.E, Math.log( 2moves / 100points ) )
+difficulty_curve = Math.pow( Math.E, Math.log( 2moves / 5points ) )
+
+# high score handling
+if localStorage?\high_scores
+	high_scores = JSON.parse that
+else 
+	high_scores = 
+		* name: \mario score: 384
+		* name: \luigi score: 253
+		* name: \wario score: 231
+		* name: \bowser score: 133
+		* name: \toad score: 3
+
+high_score_threshold = # minimum high score
+	( high_scores.reduce (a,b) -> if a.score < b.score then a else b ).score
+
+add_high_score = !(points) ->
+	high_scores.push name: window.prompt('You got a high score! enter your name:') || \anonymous, score: points
+
+	# sort decending and take 5 highest
+	high_scores.:=sort( (a,b) -> b.score - a.score ).slice 0 5
+	localStorage.\high_scores = JSON.stringify( high_scores ) if localStorage # persist
+
+
+draw_high_scores = !->
+	ctx.fillText "High Scores" 100 180
+	y = 190
+	for h of high_scores
+		ctx.fillText "#{h.name} : #{h.score}" 100 (y += 10)
 
 # game data, closed over in functions
 people = void # list of people on screen
 trampoline = void # position of trampoline
 points = void
-mistakes = void
+misses = void
 drop_position = void # used to draw dropped person
 next_person = void # the number of frames until the next person appears
 
@@ -38,7 +66,7 @@ draw = !->
 
 	ctx.fillText "trampoline: #{stop[trampoline]}" 0 20
 	ctx.fillText "points: #{points}" 100 20
-	ctx.fillText "mistakes: #{mistakes}" 150 20
+	ctx.fillText "misses: #{misses}" 150 20
 
 	# draw person
 	ctx.fillText "person: #{p.position}" p.position, 50+15*i for p,i of people
@@ -55,7 +83,7 @@ tick = !->
 			
 			if stop.indexOf(pos) is not -1 # if person was at trampoline position
 				unless p.bounced
-					return game_over! if ++mistakes is 3 # increment and check for gameover
+					return game_over! if ++misses is 3 # increment and check for gameover
 					dropped = p
 					break # stop processing people
 				p.bounced = false # reset flag for next bounce
@@ -116,6 +144,11 @@ game_over = !->
 	draw!
 	ctx.fillText "game over!" 150 130
 	ctx.fillText "click to start game" 150 150
+	draw_high_scores!
+
+	if points > high_score_threshold
+		add_high_score points
+
 	document.removeEventListener \keydown key_move
 	canvas.removeEventListener \click click_move
 
@@ -125,7 +158,7 @@ start_game = !->
 	people := [{position: 0, delay: move_delay}] # start with initial person
 	trampoline := 1 # middle
 	points := 0
-	mistakes := 0
+	misses := 0
 
 	# add the next person after the first person is saved
 	# after that, tick! will set next_person as a poisson process
@@ -145,7 +178,10 @@ move = # hash to convert from keycode to position
 	81: 0 # Q
 	87: 1 # W
 	69: 2 # E
-	# TODO zxc 
+
+	90: 0 # Z 
+	88: 1 # X
+	67: 2 # C
 
 key_move = !({keyCode}: e) -> 
 	if keyCode is 37 and trampoline > 0 # left
@@ -154,6 +190,7 @@ key_move = !({keyCode}: e) ->
 		++trampoline
 	else
 		trampoline := that if move[keyCode]? # direct movement
+	# TODO PAUSE
 	draw!
 	e.preventDefault!
 
@@ -167,4 +204,5 @@ click_move = !({clientX: x}: e) ->
 
 # add initial click to start game
 ctx.fillText "click to start game" 150 150
+draw_high_scores!
 canvas.addEventListener \click start_game # restart game

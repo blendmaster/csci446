@@ -1,5 +1,5 @@
 (function(){
-  var canvas, width, height, ctx, stop, end, move_delay, std_dev, difficulty_curve, people, trampoline, points, mistakes, drop_position, next_person, draw, tick, drop_animation, game_over, start_game, move, key_move, click_move;
+  var canvas, width, height, ctx, stop, end, move_delay, std_dev, difficulty_curve, that, high_scores, high_score_threshold, add_high_score, draw_high_scores, people, trampoline, points, misses, drop_position, next_person, draw, tick, drop_animation, game_over, start_game, move, key_move, click_move;
   canvas = document.getElementById('canvas');
   width = canvas.width, height = canvas.height;
   ctx = canvas.getContext('2d');
@@ -8,13 +8,66 @@
   };
   stop = [5, 13, 19];
   end = 21;
-  move_delay = 43;
+  move_delay = 35;
   std_dev = 5;
-  difficulty_curve = Math.pow(Math.E, Math.log(2 / 100));
+  difficulty_curve = Math.pow(Math.E, Math.log(2 / 5));
+  if (that = typeof localStorage != 'undefined' && localStorage !== null ? localStorage['high_scores'] : void 8) {
+    high_scores = JSON.parse(that);
+  } else {
+    high_scores = [
+      {
+        name: 'mario',
+        score: 384
+      }, {
+        name: 'luigi',
+        score: 253
+      }, {
+        name: 'wario',
+        score: 231
+      }, {
+        name: 'bowser',
+        score: 133
+      }, {
+        name: 'toad',
+        score: 3
+      }
+    ];
+  }
+  high_score_threshold = high_scores.reduce(function(a, b){
+    if (a.score < b.score) {
+      return a;
+    } else {
+      return b;
+    }
+  }).score;
+  console.log(high_score_threshold);
+  console.log(high_scores);
+  add_high_score = function(points){
+    high_scores.push({
+      name: window.prompt('You got a high score! enter your name:') || 'anonymous',
+      score: points
+    });
+    high_scores = high_scores.sort(function(a, b){
+      return b.score - a.score;
+    }).slice(0, 5);
+    if (localStorage) {
+      localStorage['high_scores'] = JSON.stringify(high_scores);
+    }
+  };
+  add_high_score(500);
+  draw_high_scores = function(){
+    var y, h, _i, _ref, _len;
+    ctx.fillText("High Scores", 100, 180);
+    y = 190;
+    for (_i = 0, _len = (_ref = high_scores).length; _i < _len; ++_i) {
+      h = _ref[_i];
+      ctx.fillText(h.name + " : " + h.score, 100, y += 10);
+    }
+  };
   people = void 8;
   trampoline = void 8;
   points = void 8;
-  mistakes = void 8;
+  misses = void 8;
   drop_position = void 8;
   next_person = void 8;
   draw = function(){
@@ -22,7 +75,7 @@
     ctx.clearRect(0, 0, width, height);
     ctx.fillText("trampoline: " + stop[trampoline], 0, 20);
     ctx.fillText("points: " + points, 100, 20);
-    ctx.fillText("mistakes: " + mistakes, 150, 20);
+    ctx.fillText("misses: " + misses, 150, 20);
     for (i = 0, _len = (_ref = people).length; i < _len; ++i) {
       p = _ref[i];
       ctx.fillText("person: " + p.position, p.position, 50 + 15 * i);
@@ -40,7 +93,7 @@
         pos = p.position++;
         if (stop.indexOf(pos) !== -1) {
           if (!p.bounced) {
-            if (++mistakes === 3) {
+            if (++misses === 3) {
               return game_over();
             }
             dropped = p;
@@ -97,6 +150,10 @@
     draw();
     ctx.fillText("game over!", 150, 130);
     ctx.fillText("click to start game", 150, 150);
+    draw_high_scores();
+    if (points > high_score_threshold) {
+      add_high_score(points);
+    }
     document.removeEventListener('keydown', key_move);
     canvas.removeEventListener('click', click_move);
     canvas.addEventListener('click', start_game);
@@ -108,7 +165,7 @@
     }];
     trampoline = 1;
     points = 0;
-    mistakes = 0;
+    misses = 0;
     next_person = end * move_delay;
     document.addEventListener('keydown', key_move);
     canvas.addEventListener('click', click_move);
@@ -119,7 +176,10 @@
   move = {
     81: 0,
     87: 1,
-    69: 2
+    69: 2,
+    90: 0,
+    88: 1,
+    67: 2
   };
   key_move = function(e){
     var keyCode, that;
@@ -133,8 +193,6 @@
         trampoline = that;
       }
     }
-    console.log(trampoline);
-    console.log(keyCode);
     draw();
     e.preventDefault();
   };
@@ -146,5 +204,6 @@
     e.preventDefault();
   };
   ctx.fillText("click to start game", 150, 150);
+  draw_high_scores();
   canvas.addEventListener('click', start_game);
 }).call(this);
