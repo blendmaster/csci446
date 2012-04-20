@@ -1,5 +1,101 @@
 # deferred load, so DOMContentLoaded handler isn't necessary
 
-ctx = document.getElementById \canvas .getContext \2d
+# DOM interfacing
 
-ctx.fillText 'Fire goes here' 0 100
+canvas = document.getElementById \canvas
+{width, height} = canvas
+ctx = canvas.getContext \2d
+
+# good ol vendor prefixes
+window.requestAnimationFrame = 
+	window.requestAnimationFrame or
+	window.mozRequestAnimationFrame or
+	window.webkitRequestAnimationFrame or
+	window.msRequestAnimationFrame or
+	window.oRequestAnimationFrame or
+	-> window.setTimeout it, 1000ms / 60frames
+
+# balancing constants
+stop = [ 4 12 18 ] # where there is a trampoline check 
+end = 100positions
+move_delay = 60frames
+
+# game data, closed over in functions
+people = void # list of people on screen
+trampoline = void # position of trampoline
+points = void
+mistakes = void
+
+tick = !->
+	ctx.clearRect 0 0 width, height
+
+	ctx.fillText "trampoline: #trampoline" 0 20
+
+	next_people = [] # buffer for people that remain on screen
+	for p of people
+		if --p.delay is 0 # until person is due to move
+			p.delay = move_delay
+			pos = p.position++ # increment position (pos is last position)
+			
+			if stop.indexOf(pos) is not -1 # if person was at trampoline position
+				unless p.bounced
+					# TODO handle walk off
+					return game_over! if ++mistakes > 3 # increment and check for gameover
+				p.bounced = false # reset flag for next bounce
+
+		p.bounced = true if p.position is trampoline
+
+		if p.position > end
+			++points
+		else
+			next_people.push p # persist person
+			# TODO draw
+			ctx.fillText "person: #{p.position}" p.position, 50
+
+	people := next_people # flush people who made it
+
+	# TODO add people	
+	
+	window.requestAnimationFrame tick # next frame
+				
+game_over = !-> # TODO
+	# display message
+	document.removeEventListener \keydown key_move
+	canvas.removeEventListener \click click_move
+
+	canvas.addEventListener \click start_game # restart game
+
+start_game = !->
+	people := [{position: 0, delay: move_delay}] # start with initial person
+	trampoline := stop.1
+	points := 0
+	mistakes := 0
+
+	# TODO init graphics positions
+
+	document.addEventListener \keydown key_move
+	canvas.addEventListener \click click_move
+	
+	canvas.removeEventListener \click start_game
+	
+	window.requestAnimationFrame tick # start
+
+move = # hash to convert from keycode to position
+	81: stop.0 # Q
+	87: stop.1 # W
+	69: stop.2 # E
+	# TODO zxc 
+
+key_move = !({keyCode}: e) -> 
+	# TODO arrow keys
+	trampoline := move[keyCode]
+	e.preventDefault!
+
+click_move = !({clientX: x}: e) ->
+	# 3 equal-width zones to click
+	trampoline := stop[ Math.floor( x / width * 3 ) ]
+	e.preventDefault!
+
+# add initial click to start game
+# TODO start game message
+canvas.addEventListener \click start_game # restart game
