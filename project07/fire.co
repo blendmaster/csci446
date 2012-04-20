@@ -32,6 +32,7 @@ window.cancelAnimationFrame =
 stop = [ 5 13 19 ] # where there is a trampoline check 
 end = 21positions
 move_delay = 35frames
+trampoline_delay = 15frames
 std_dev = 5moves # controls how random next players are
 # exponential difficulty curve, giving a new player at an average of
 # 7 moves after 100 turns
@@ -53,7 +54,9 @@ high_score_threshold = # minimum high score
 	( high_scores.reduce (a,b) -> if a.score < b.score then a else b ).score
 
 add_high_score = !(points) ->
-	high_scores.push name: window.prompt('You got a high score! enter your name:') || \anonymous, score: points
+	high_scores.push do
+		name: window.prompt('You got a high score! enter your name:').substr(0,10) || \anonymous
+		score: points
 
 	# sort decending and take 5 highest
 	high_scores.:=sort( (a,b) -> b.score - a.score ).slice 0 5
@@ -95,24 +98,34 @@ tick = !->
 	dropped = false # if somebody got dropped
 	dirty = false # if somebody moved and a redraw is necessary
 
+	tramp = stop[trampoline] # trampoline move position
+
 	for p of people
 		if --p.delay is 0 # until person is due to move
 			dirty = true
 			p.delay = move_delay
-			pos = p.position++ # increment position (pos is last position)
+			prev = p.position
+			pos = ++p.position
 			
-			if stop.indexOf(pos) is not -1 # if person was at trampoline position
-				unless p.bounced
-					return game_over! if ++misses is 3 # increment and check for gameover
-					dropped = p
-					break # stop processing people
+			if stop.indexOf(pos) is not -1 # entered a bounce spot
+				unless pos is tramp # trampoline is already positioned
+					p.death_timer = trampoline_delay # start grace period
+
+			if stop.indexOf(prev) is not -1 # if they were bounced
+				++points
 				p.bounced = false # reset flag for next bounce
 
-		# this happens every frame so the trampoline can slide under the person
-		# even if they already are in position. This allows people who end up
-		# in the trampoline position at the same time to still be dealt with, so
-		# the person-adding code doesn't have to check for time collisions
-		p.bounced = true if p.position is stop[trampoline]
+		# short grace time for trampoline check, so trampoline can handle
+		# multiple people in-between moves
+		if p.death_timer
+			if --p.death_timer is 0
+				return game_over! if ++misses is 3 # increment and check for gameover
+				dropped = p
+				break # stop processing people
+
+		if p.position is tramp
+			p.bounced = true 
+			p.death_timer = 0
 
 	if dropped
 		people.splice people.indexOf( dropped ), 1 # remove person
@@ -124,9 +137,7 @@ tick = !->
 		drop_animation!
 	else
 		# pop first person if they're saved
-		if people.0?position is end
-			++points
-			people.shift!
+		people.shift! if people.0?position is end
 
 		if --next_person is 0
 			people.push {position:0 delay: move_delay}
@@ -134,10 +145,12 @@ tick = !->
 			avg = 0
 			avg += Math.random! * 2 - 1 for i til 16 # [-1, 1) 
 			avg /= 16
+			# TODO better difficulty curve
+			# use frame-level granularity for more interesting play
+			# in the original fire, they tend to come in waves, with the delay short
+			# enough to make the player have to juggle them
 			next_person := 
 				( Math.floor ( avg * std_dev + end/2 - Math.pow(difficulty_curve,points) ) * move_delay ) >? move_delay
-
-		# TODO handle 2nd window jumper
 
 		draw! if dirty
 		window.requestAnimationFrame tick # next frame
@@ -154,7 +167,6 @@ drop_animation = !->
 			canvas.addEventListener \click click_move
 
 			# create new person if there aren't any on screen 
-			# so player won't get bored
 			next_person := 1
 			draw!
 			tick!
@@ -167,9 +179,9 @@ game_over = !->
 	show_high_scores!
 
 	document.removeEventListener \keydown key_move
-	document.removeEventListener \click click_move
+	canvas.removeEventListener \click click_move
 
-	document.addEventListener \click click_start
+	canvas.addEventListener \click click_start
 
 	# cycle gameover for 5 seconds, then display title
 	cycles = 50
@@ -201,9 +213,9 @@ start_game = !->
 	window.cancelAnimationFrame cycle_frame # edge case: stop title animation wrapper
 
 	document.addEventListener \keydown key_move
-	document.addEventListener \click click_move
+	canvas.addEventListener \click click_move
 	
-	document.removeEventListener \click click_start
+	canvas.removeEventListener \click click_start
 	
 	hide_high_scores!
 
@@ -249,5 +261,5 @@ cycle_title = !->
 # add initial click to start game
 cycle_title!
 show_high_scores!
-document.addEventListener \click click_start 
+canvas.addEventListener \click click_start 
 

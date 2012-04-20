@@ -1,6 +1,5 @@
 html { 
 	min-height: 100%;
-	cursor: pointer;
 	background: url(paper.png); }
 
 /* lame use of container div, because even if
@@ -16,6 +15,8 @@ because that's what people expect. */
 	padding: 27px;
 	background: url(border.png) no-repeat; }
 
+#canvas { cursor: pointer; }
+	
 #high-scores {
 	position: absolute;
 	top: 198px;

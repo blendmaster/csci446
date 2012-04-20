@@ -1,5 +1,5 @@
 (function(){
-  var canvas, width, height, ctx, assets, img, stop, end, move_delay, std_dev, difficulty_curve, that, high_scores, high_score_threshold, add_high_score, high_scores_el, hide_high_scores, show_high_scores, people, trampoline, points, misses, drop_position, next_person, draw, tick, drop_animation, game_over, start_game, click_start, key_move, click_move, current_title, cycle_timeout, cycle_frame, cycle_title, _i, _ref, _len;
+  var canvas, width, height, ctx, assets, img, stop, end, move_delay, trampoline_delay, std_dev, difficulty_curve, that, high_scores, high_score_threshold, add_high_score, high_scores_el, hide_high_scores, show_high_scores, people, trampoline, points, misses, drop_position, next_person, draw, tick, drop_animation, game_over, start_game, click_start, key_move, click_move, current_title, cycle_timeout, cycle_frame, cycle_title, _i, _ref, _len;
   canvas = document.getElementById('canvas');
   width = canvas.width, height = canvas.height;
   ctx = canvas.getContext('2d');
@@ -17,6 +17,7 @@
   stop = [5, 13, 19];
   end = 21;
   move_delay = 35;
+  trampoline_delay = 15;
   std_dev = 5;
   difficulty_curve = Math.pow(Math.E, Math.log(2 / 5));
   if (that = typeof localStorage != 'undefined' && localStorage !== null ? localStorage['high_scores'] : void 8) {
@@ -50,7 +51,7 @@
   }).score;
   add_high_score = function(points){
     high_scores.push({
-      name: window.prompt('You got a high score! enter your name:') || 'anonymous',
+      name: window.prompt('You got a high score! enter your name:').substr(0, 10) || 'anonymous',
       score: points
     });
     high_scores = high_scores.sort(function(a, b){
@@ -92,28 +93,38 @@
     }
   };
   tick = function(){
-    var dropped, dirty, p, pos, avg, i, _i, _ref, _len;
+    var dropped, dirty, tramp, p, prev, pos, avg, i, _i, _ref, _len;
     dropped = false;
     dirty = false;
+    tramp = stop[trampoline];
     for (_i = 0, _len = (_ref = people).length; _i < _len; ++_i) {
       p = _ref[_i];
       if (--p.delay === 0) {
         dirty = true;
         p.delay = move_delay;
-        pos = p.position++;
+        prev = p.position;
+        pos = ++p.position;
         if (stop.indexOf(pos) !== -1) {
-          if (!p.bounced) {
-            if (++misses === 3) {
-              return game_over();
-            }
-            dropped = p;
-            break;
+          if (pos !== tramp) {
+            p.death_timer = trampoline_delay;
           }
+        }
+        if (stop.indexOf(prev) !== -1) {
           p.bounced = false;
+        }
+      }
+      if (p.death_timer) {
+        if (--p.death_timer === 0) {
+          if (++misses === 3) {
+            return game_over();
+          }
+          dropped = p;
+          break;
         }
       }
       if (p.position === stop[trampoline]) {
         p.bounced = true;
+        p.death_timer = 0;
       }
     }
     if (dropped) {
@@ -163,8 +174,8 @@
     }
     show_high_scores();
     document.removeEventListener('keydown', key_move);
-    document.removeEventListener('click', click_move);
-    document.addEventListener('click', click_start);
+    canvas.removeEventListener('click', click_move);
+    canvas.addEventListener('click', click_start);
     cycles = 50;
     current_gameover = 0;
     ctx.drawImage(assets.gameover1, 0, 0, width, height);
@@ -192,8 +203,8 @@
     window.clearTimeout(cycle_timeout);
     window.cancelAnimationFrame(cycle_frame);
     document.addEventListener('keydown', key_move);
-    document.addEventListener('click', click_move);
-    document.removeEventListener('click', click_start);
+    canvas.addEventListener('click', click_move);
+    canvas.removeEventListener('click', click_start);
     hide_high_scores();
     draw();
     tick();
@@ -239,5 +250,5 @@
   };
   cycle_title();
   show_high_scores();
-  document.addEventListener('click', click_start);
+  canvas.addEventListener('click', click_start);
 }).call(this);
