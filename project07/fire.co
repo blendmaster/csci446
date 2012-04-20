@@ -1,5 +1,4 @@
-# deferred load, so DOMContentLoaded handler isn't necessary
-
+<- window.addEventListener \load
 # DOM interfacing
 
 canvas = document.getElementById \canvas
@@ -10,6 +9,14 @@ ctx = canvas.getContext \2d
 assets = {}
 for img of document.getElementById \assets .children
 	assets[img.id] = img
+
+# shortcut to draw image assets to the screen
+ctx.render = -> @drawImage do
+	assets[it] or throw new Error "asset #it doesn't exist!"
+	0
+	0
+
+# set font to something clos to my handwriting
 
 # good ol vendor prefixes
 window.requestAnimationFrame = 
@@ -29,10 +36,10 @@ window.cancelAnimationFrame =
 	-> window.clearTimeout it
 
 # balancing constants
-stop = [ 5 13 19 ] # where there is a trampoline check 
+stop = [ 4 12 18 ] # where there is a trampoline check 
 end = 21positions
-move_delay = 35frames
-trampoline_delay = 15frames
+move_delay = 40frames
+trampoline_delay = 8frames
 std_dev = 5moves # controls how random next players are
 # exponential difficulty curve, giving a new player at an average of
 # 7 moves after 100 turns
@@ -48,7 +55,7 @@ else
 		* name: \luigi score: 253
 		* name: \wario score: 231
 		* name: \bowser score: 133
-		* name: \toad score: 3
+		* name: \toad score: 27
 
 high_score_threshold = # minimum high score
 	( high_scores.reduce (a,b) -> if a.score < b.score then a else b ).score
@@ -81,18 +88,19 @@ people = void # list of people on screen
 trampoline = void # position of trampoline
 points = void
 misses = void
-drop_position = void # used to draw dropped person
 next_person = void # the number of frames until the next person appears
 
 draw = !->
 	ctx.clearRect 0 0 width, height
+	ctx.render \bg
 
-	ctx.fillText "trampoline: #{stop[trampoline]}" 0 20
-	ctx.fillText "points: #{points}" 100 20
-	ctx.fillText "misses: #{misses}" 150 20
+	ctx.font = '12px "Gloria Hallelujah"'
+	ctx.fillText points, 155 16
+	ctx.render "#{misses}miss" if misses > 0
 
-	# draw person
-	ctx.fillText "person: #{p.position}" p.position, 50+15*i for p,i of people
+	ctx.render "tramp#{trampoline}"
+
+	ctx.render p.position.toString! for p of people
 
 tick = !->
 	dropped = false # if somebody got dropped
@@ -101,7 +109,7 @@ tick = !->
 	tramp = stop[trampoline] # trampoline move position
 
 	for p of people
-		if --p.delay is 0 # until person is due to move
+		if --p.delay <= 0 # until person is due to move
 			dirty = true
 			p.delay = move_delay
 			prev = p.position
@@ -119,7 +127,7 @@ tick = !->
 		# multiple people in-between moves
 		if p.death_timer
 			if --p.death_timer is 0
-				return game_over! if ++misses is 3 # increment and check for gameover
+				++misses
 				dropped = p
 				break # stop processing people
 
@@ -129,12 +137,7 @@ tick = !->
 
 	if dropped
 		people.splice people.indexOf( dropped ), 1 # remove person
-		drop_position := pos # set where drop animation starts
-
-		# temporarily prevent trampoline movement
-		document.removeEventListener \keydown key_move
-		canvas.removeEventListener \click click_move
-		drop_animation!
+		drop_animation p.position
 	else
 		# pop first person if they're saved
 		people.shift! if people.0?position is end
@@ -154,23 +157,40 @@ tick = !->
 
 		draw! if dirty
 		window.requestAnimationFrame tick # next frame
-				
-drop_animation = !->
-	draw!
-	# TODO walk off screen
-	ctx.fillText "dropped!" 150 150
-	
-	# re-add trampoline events and start game again
-	setTimeout do
-		->
-			document.addEventListener \keydown key_move
-			canvas.addEventListener \click click_move
 
-			# create new person if there aren't any on screen 
-			next_person := 1
+# map from miss position to next walkoff
+walk_off_positions = 4: 0, 12: 2, 18: 3
+drop_animation = !(drop_position) ->
+	# temporarily prevent trampoline movement
+	document.removeEventListener \keydown key_move
+	canvas.removeEventListener \click click_move
+
+	draw!
+	ctx.render "miss#{drop_position}"
+	
+	# display walk off animation
+	walk_pos = walk_off_positions[drop_position]
+	
+	setTimeout do
+		function walk_anim
 			draw!
-			tick!
-		1000ms
+			ctx.render "walk#{walk_pos}"
+			if ++walk_pos < 5 # 4 is last walk position
+				setTimeout walk_anim, 500ms 
+			else
+				return game_over! if misses is 3
+				# re-add trampoline events and start game again
+				setTimeout do
+					->
+						document.addEventListener \keydown key_move
+						canvas.addEventListener \click click_move
+
+						# create new person if there aren't any on screen 
+						next_person := 1
+						draw!
+						tick!
+					500ms
+		500ms
 
 game_over = !->
 	if points > high_score_threshold
