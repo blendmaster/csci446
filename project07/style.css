@@ -18,9 +18,12 @@ because that's what people expect. */
 
 #high-scores {
 	position: absolute;
-	top: 200px;
+	top: 198px;
 	left: 105px;
 	pointer-events: none; 
 	margin: 0;
 	padding: 0;
-	list-style: none}
+	list-style: none;
+	font-size: 12px;
+	line-height: 18px;
+	font-family: 'Gloria Hallelujah', sans-serif;}
