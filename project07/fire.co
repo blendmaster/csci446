@@ -38,7 +38,7 @@ window.cancelAnimationFrame =
 # balancing constants
 stop = [ 4 12 18 ] # where there is a trampoline check 
 end = 21positions
-move_delay = 40frames
+move_delay = 38frames
 trampoline_delay = 8frames
 std_dev = 5moves # controls how random next players are
 # exponential difficulty curve, giving a new player at an average of
@@ -89,6 +89,7 @@ trampoline = void # position of trampoline
 points = void
 misses = void
 next_person = void # the number of frames until the next person appears
+frame = void # id of the next frame, for canceling
 
 draw = !->
 	ctx.clearRect 0 0 width, height
@@ -156,7 +157,7 @@ tick = !->
 				( Math.floor ( avg * std_dev + end/2 - Math.pow(difficulty_curve,points) ) * move_delay ) >? move_delay
 
 		draw! if dirty
-		window.requestAnimationFrame tick # next frame
+		frame := window.requestAnimationFrame tick # next frame
 
 # map from miss position to next walkoff
 walk_off_positions = 4: 0, 12: 2, 18: 3
@@ -252,17 +253,46 @@ key_move = !({keyCode}: e) ->
 		--trampoline
 	else if keyCode is 39 and trampoline < 2 # right
 		++trampoline
-	# TODO PAUSE
+	else if keyCode is 27 # esape
+		pause!
 	draw!
 	e.preventDefault!
 
-click_move = !({clientX: x, button}: e) ->
-	if button is 0
-		# 3 equal-width zones to click
-		# FIXME not considering canvas element 
-		trampoline := Math.floor( x / width * 3 ) 
-		draw!
-		e.preventDefault!
+click_move = !({clientX, clientY}: e) ->
+	{left, top} = canvas.getBoundingClientRect!
+	x = clientX - left
+	y = clientY - top
+	if x > 208 and y < 38 # top right corner
+		pause!
+	else if 25 < x < 97
+		trampoline := 0
+	else if 97 < x < 156
+		trampoline := 1
+	else if 156 < x < 236
+		trampoline := 2
+	draw!
+	e.preventDefault!
+
+pause = !->
+	window.cancelAnimationFrame frame
+
+	# wrapped in setTimeout, because somehow, there is still a 
+	# draw! call waiting in the queue, so we want to run this after that
+	setTimeout do
+		->
+			ctx.clearRect 0 0 width, height
+			ctx.render \pause
+		0ms
+
+	document.removeEventListener \keydown key_move
+	canvas.removeEventListener \click click_move
+	canvas.addEventListener \click click_unpause
+
+click_unpause = !->
+	canvas.removeEventListener \click click_unpause
+	document.addEventListener \keydown key_move
+	canvas.addEventListener \click click_move
+	tick!
 
 # cheesy hand-drawn animation effect
 current_title = 0

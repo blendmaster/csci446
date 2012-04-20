@@ -1,6 +1,6 @@
 (function(){
   window.addEventListener('load', function(){
-    var canvas, width, height, ctx, assets, img, stop, end, move_delay, trampoline_delay, std_dev, difficulty_curve, that, high_scores, high_score_threshold, add_high_score, high_scores_el, hide_high_scores, show_high_scores, people, trampoline, points, misses, next_person, draw, tick, walk_off_positions, drop_animation, game_over, start_game, click_start, key_move, click_move, current_title, cycle_timeout, cycle_frame, cycle_title, _i, _ref, _len;
+    var canvas, width, height, ctx, assets, img, stop, end, move_delay, trampoline_delay, std_dev, difficulty_curve, that, high_scores, high_score_threshold, add_high_score, high_scores_el, hide_high_scores, show_high_scores, people, trampoline, points, misses, next_person, frame, draw, tick, walk_off_positions, drop_animation, game_over, start_game, click_start, key_move, click_move, pause, click_unpause, current_title, cycle_timeout, cycle_frame, cycle_title, _i, _ref, _len;
     canvas = document.getElementById('canvas');
     width = canvas.width, height = canvas.height;
     ctx = canvas.getContext('2d');
@@ -86,6 +86,7 @@
     points = void 8;
     misses = void 8;
     next_person = void 8;
+    frame = void 8;
     draw = function(){
       var p, _i, _ref, _len;
       ctx.clearRect(0, 0, width, height);
@@ -157,7 +158,7 @@
         if (dirty) {
           draw();
         }
-        window.requestAnimationFrame(tick);
+        frame = window.requestAnimationFrame(tick);
       }
     };
     walk_off_positions = {
@@ -251,18 +252,45 @@
         --trampoline;
       } else if (keyCode === 39 && trampoline < 2) {
         ++trampoline;
+      } else if (keyCode === 27) {
+        pause();
       }
       draw();
       e.preventDefault();
     };
     click_move = function(e){
-      var x, button;
-      x = e.clientX, button = e.button;
-      if (button === 0) {
-        trampoline = Math.floor(x / width * 3);
-        draw();
-        e.preventDefault();
+      var clientX, clientY, left, top, x, y, _ref;
+      clientX = e.clientX, clientY = e.clientY;
+      _ref = canvas.getBoundingClientRect(), left = _ref.left, top = _ref.top;
+      x = clientX - left;
+      y = clientY - top;
+      if (x > 208 && y < 38) {
+        pause();
+      } else if (25 < x && x < 97) {
+        trampoline = 0;
+      } else if (97 < x && x < 156) {
+        trampoline = 1;
+      } else if (156 < x && x < 236) {
+        trampoline = 2;
       }
+      draw();
+      e.preventDefault();
+    };
+    pause = function(){
+      window.cancelAnimationFrame(frame);
+      setTimeout(function(){
+        ctx.clearRect(0, 0, width, height);
+        return ctx.render('pause');
+      }, 0);
+      document.removeEventListener('keydown', key_move);
+      canvas.removeEventListener('click', click_move);
+      canvas.addEventListener('click', click_unpause);
+    };
+    click_unpause = function(){
+      canvas.removeEventListener('click', click_unpause);
+      document.addEventListener('keydown', key_move);
+      canvas.addEventListener('click', click_move);
+      tick();
     };
     current_title = 0;
     cycle_timeout = void 8;
