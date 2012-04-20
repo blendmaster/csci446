@@ -16,50 +16,73 @@ window.requestAnimationFrame =
 	-> window.setTimeout it, 1000ms / 60frames
 
 # balancing constants
-stop = [ 4 12 18 ] # where there is a trampoline check 
-end = 100positions
-move_delay = 60frames
+stop = [ 5 13 19 ] # where there is a trampoline check 
+end = 21positions
+move_delay = 50frames
 
 # game data, closed over in functions
 people = void # list of people on screen
 trampoline = void # position of trampoline
 points = void
 mistakes = void
+drop_position = void # used to draw dropped person
 
-tick = !->
+draw = !->
 	ctx.clearRect 0 0 width, height
 
-	ctx.fillText "trampoline: #trampoline" 0 20
+	ctx.fillText "trampoline: #{stop[trampoline]}" 0 20
+	ctx.fillText "points: #{points}" 100 20
+	ctx.fillText "mistakes: #{mistakes}" 150 20
 
-	next_people = [] # buffer for people that remain on screen
+	# draw person
+	ctx.fillText "person: #{p.position}" p.position, 50 for p of people
+
+tick = !->
+	dropped = false # if somebody got dropped
+	dirty = false # if somebody moved and a redraw is necessary
+
 	for p of people
 		if --p.delay is 0 # until person is due to move
+			dirty = true
 			p.delay = move_delay
 			pos = p.position++ # increment position (pos is last position)
 			
 			if stop.indexOf(pos) is not -1 # if person was at trampoline position
 				unless p.bounced
-					# TODO handle walk off
 					return game_over! if ++mistakes > 3 # increment and check for gameover
+					dropped = p
+					break # stop processing people
 				p.bounced = false # reset flag for next bounce
 
-		p.bounced = true if p.position is trampoline
+		# this happens every frame so the trampoline can slide under the person
+		# even if they already are in position. This allows people who end up
+		# in the trampoline position at the same time to still be dealt with, so
+		# the person-adding code doesn't have to check for time collisions
+		p.bounced = true if p.position is stop[trampoline]
 
-		if p.position > end
+	if dropped
+		people.splice people.indexOf( dropped ), 1 # remove person
+		drop_position := pos # set where drop animation starts
+		drop_animation!
+	else
+		# pop first person if they're saved
+		if people.0?position > end
 			++points
-		else
-			next_people.push p # persist person
-			# TODO draw
-			ctx.fillText "person: #{p.position}" p.position, 50
+			people.shift!
 
-	people := next_people # flush people who made it
-
-	# TODO add people	
-	
-	window.requestAnimationFrame tick # next frame
+		# TODO add people	
+		
+		draw! if dirty
+		window.requestAnimationFrame tick # next frame
 				
-game_over = !-> # TODO
-	# display message
+drop_animation = !->
+	draw!
+	# TODO walk off screen
+	ctx.fillText "dropped!" 150 150
+	# TODO continue
+
+game_over = !->
+	ctx.fillText "click to start game" 150 150
 	document.removeEventListener \keydown key_move
 	canvas.removeEventListener \click click_move
 
@@ -67,7 +90,7 @@ game_over = !-> # TODO
 
 start_game = !->
 	people := [{position: 0, delay: move_delay}] # start with initial person
-	trampoline := stop.1
+	trampoline := 1 # middle
 	points := 0
 	mistakes := 0
 
@@ -78,24 +101,31 @@ start_game = !->
 	
 	canvas.removeEventListener \click start_game
 	
-	window.requestAnimationFrame tick # start
+	draw!
+	tick!
 
 move = # hash to convert from keycode to position
-	81: stop.0 # Q
-	87: stop.1 # W
-	69: stop.2 # E
+	81: 0 # Q
+	87: 1 # W
+	69: 2 # E
 	# TODO zxc 
 
 key_move = !({keyCode}: e) -> 
-	# TODO arrow keys
-	trampoline := move[keyCode]
+	if keyCode is 37 and trampoline > 0 # left
+		--trampoline
+	else if keyCode is 39 and trampoline < 2 # right
+		++trampoline
+	else
+		trampoline := that if move[keyCode] # direct movement
+	draw!
 	e.preventDefault!
 
 click_move = !({clientX: x}: e) ->
 	# 3 equal-width zones to click
-	trampoline := stop[ Math.floor( x / width * 3 ) ]
+	trampoline := Math.floor( x / width * 3 )
+	draw!
 	e.preventDefault!
 
 # add initial click to start game
-# TODO start game message
+ctx.fillText "click to start game" 150 150
 canvas.addEventListener \click start_game # restart game
