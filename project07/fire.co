@@ -1,0 +1,5 @@
+# deferred load, so DOMContentLoaded handler isn't necessary
+
+ctx = document.getElementById \canvas .getContext \2d
+
+ctx.fillText 'Fire goes here' 0 100
