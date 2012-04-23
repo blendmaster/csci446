@@ -13,7 +13,7 @@
     return it.style.removeProperty('display');
   };
   window.addEventListener('load', function(){
-    var canvas, width, height, ctx, assets, img, stop, end, move_delay, trampoline_delay, std_dev, difficulty_curve, that, high_scores, high_score_threshold, add_high_score, high_scores_el, hide_high_scores, show_high_scores, people, trampoline, points, misses, next_person, frame, draw, tick, walk_off_positions, drop_animation, game_over, start_game, click_start, key_move, click_move, pause, click_unpause, current_title, cycle_timeout, cycle_frame, cycle_title, _i, _ref, _len;
+    var canvas, width, height, ctx, assets, img, normal_rand, stop, end, move_delay, trampoline_delay, inter_wave_delay, wave_length, inter_person_delay, high_scores, high_score_threshold, add_high_score, high_scores_el, hide_high_scores, show_high_scores, people, trampoline, points, misses, next_wave, wave, frame, draw, tick, walk_off_positions, drop_animation, game_over, start_game, click_start, key_move, click_move, pause, click_unpause, current_title, title_frame, cycle_timeout, cycle_frame, title_base, cycle_title, _i, _ref, _len;
     canvas = document.getElementById('canvas');
     width = canvas.width, height = canvas.height;
     ctx = canvas.getContext('2d');
@@ -27,6 +27,14 @@
         throw new Error("asset " + it + " doesn't exist!");
       }()), 0, 0);
     };
+    normal_rand = function(mean, std_dev){
+      var avg, i;
+      avg = 0;
+      for (i = 0; i < 32; ++i) {
+        avg += Math.random() * 2 - 1;
+      }
+      return Math.floor(avg / 32 * std_dev + mean);
+    };
     window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame || function(it){
       return window.setTimeout(it, 1000 / 60);
     };
@@ -37,11 +45,19 @@
     end = 21;
     move_delay = 38;
     trampoline_delay = 8;
-    std_dev = 5;
-    difficulty_curve = Math.pow(Math.E, Math.log(2 / 5));
-    if (that = typeof localStorage != 'undefined' && localStorage !== null ? localStorage['high_scores'] : void 8) {
-      high_scores = JSON.parse(that);
-    } else {
+    inter_wave_delay = function(points){
+      return Math.min(move_delay * (end - 2), Math.max(move_delay, normal_rand(move_delay * (end - 5 - points * 21 / 1000), move_delay * end)));
+    };
+    wave_length = function(points){
+      return Math.min(3 + points * 7 / 1000, Math.max(Math.floor(1 + points * 2 / 1000), normal_rand(2 + points * 8 / 1000, 10)));
+    };
+    inter_person_delay = function(points){
+      return Math.max(move_delay * 1.5, normal_rand(move_delay * (4 - points * 1 / 1000), move_delay * 20));
+    };
+    try {
+      high_scores = JSON.parse(typeof localStorage != 'undefined' && localStorage !== null ? localStorage.high_scores : void 8);
+    } catch (_e) {}
+    if (!(high_scores != null && Array.isArray(high_scores))) {
       high_scores = [
         {
           name: 'mario',
@@ -70,14 +86,18 @@
     }).score;
     add_high_score = function(points){
       high_scores.push({
-        name: window.prompt('You got a high score! enter your name:').substr(0, 10) || 'anonymous',
+        name: window.prompt('You got a high score! enter your name:', '').substr(0, 10) || 'anonymous',
         score: points
       });
       high_scores = high_scores.sort(function(a, b){
         return b.score - a.score;
       }).slice(0, 5);
-      if (localStorage) {
-        localStorage['high_scores'] = JSON.stringify(high_scores);
+      try {
+        if (localStorage) {
+          localStorage['high_scores'] = JSON.stringify(high_scores);
+        }
+      } catch (e) {
+        alert("Sorry, I couldn't save your high score. Check your browser's security settings and make sure that this webpage is allowed to store data on your computer.");
       }
     };
     high_scores_el = document.getElementById('high-scores');
@@ -98,7 +118,8 @@
     trampoline = void 8;
     points = void 8;
     misses = void 8;
-    next_person = void 8;
+    next_wave = void 8;
+    wave = void 8;
     frame = void 8;
     draw = function(){
       var p, _i, _ref, _len;
@@ -116,7 +137,7 @@
       }
     };
     tick = function(){
-      var dropped, dirty, tramp, p, prev, pos, avg, i, _i, _ref, _len;
+      var dropped, dirty, tramp, p, prev, pos, i, _i, _ref, _len, _res, _to;
       dropped = false;
       dirty = false;
       tramp = stop[trampoline];
@@ -156,17 +177,30 @@
         if (((_ref = people[0]) != null ? _ref.position : void 8) === end) {
           people.shift();
         }
-        if (--next_person === 0) {
-          people.push({
-            position: 0,
-            delay: move_delay
-          });
-          avg = 0;
-          for (i = 0; i < 16; ++i) {
-            avg += Math.random() * 2 - 1;
+        if (next_wave > 0) {
+          --next_wave;
+        } else {
+          if (--wave[0] <= 0) {
+            wave.shift();
+            people.push({
+              position: 0,
+              delay: move_delay
+            });
+            dirty = true;
+            if (wave.length === 0) {
+              next_wave = inter_wave_delay(points);
+              _res = [];
+              for (i = 0, _to = wave_length(points); i < _to; ++i) {
+                _res.push(inter_person_delay(points));
+              }
+              wave = _res;
+              if (wave.length === 1) {
+                next_wave /= 2;
+              }
+              console.log("new wave in " + next_wave);
+              console.log(wave);
+            }
           }
-          avg /= 16;
-          next_person = (_ref = Math.floor((avg * std_dev + end / 2 - Math.pow(difficulty_curve, points)) * move_delay)) > move_delay ? _ref : move_delay;
         }
         if (dirty) {
           draw();
@@ -199,7 +233,13 @@
             return setTimeout(function(){
               document.addEventListener('keydown', key_move);
               canvas.addEventListener('click', click_move);
-              next_person = 1;
+              if (people.length === 0) {
+                if (next_wave > 0) {
+                  next_wave = 0;
+                } else {
+                  wave[0] = 0;
+                }
+              }
               draw();
               return tick();
             }, 500);
@@ -240,7 +280,8 @@
       trampoline = 1;
       points = 0;
       misses = 0;
-      next_person = end * move_delay;
+      wave = [end * move_delay, end * move_delay];
+      next_wave = 0;
       window.clearTimeout(cycle_timeout);
       window.cancelAnimationFrame(cycle_frame);
       document.addEventListener('keydown', key_move);
@@ -306,12 +347,18 @@
       tick();
     };
     current_title = 0;
+    title_frame = 0;
     cycle_timeout = void 8;
     cycle_frame = void 8;
+    title_base = 'instr';
     cycle_title = function(){
+      if (++title_frame > 40) {
+        title_frame = 0;
+        title_base = title_base === 'title' ? 'instr' : 'title';
+      }
       ctx.clearRect(0, 0, width, height);
       current_title = (current_title + 1) % 3;
-      ctx.drawImage(assets["title" + (current_title + 1)], 0, 0, width, height);
+      ctx.render(title_base + current_title);
       cycle_frame = window.requestAnimationFrame(function(){
         return cycle_timeout = setTimeout(cycle_title, 100);
       });
