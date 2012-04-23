@@ -197,8 +197,6 @@
               if (wave.length === 1) {
                 next_wave /= 2;
               }
-              console.log("new wave in " + next_wave);
-              console.log(wave);
             }
           }
         }

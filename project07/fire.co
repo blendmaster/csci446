@@ -200,8 +200,6 @@ tick = !->
 						inter_person_delay points
 					if wave.length is 1
 						next_wave /= 2 # try to space out single person waves better
-					console.log "new wave in #next_wave"
-					console.log wave
 
 		draw! if dirty
 		frame := window.requestAnimationFrame tick # next frame
